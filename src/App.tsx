@@ -10,6 +10,12 @@ import { ScienceSimulations } from './components/simulations/ScienceSimulations'
 import { QuizArena } from './components/arena/QuizArena';
 import { LeaderboardView } from './components/leaderboard/LeaderboardView';
 import { UserProfile } from './components/profile/UserProfile';
+import { AdventureMap } from './components/journey/AdventureMap';
+import { Stage1Pollution } from './components/journey/Stage1Pollution';
+import { Stage2Erosion } from './components/journey/Stage2Erosion';
+import { Stage3Protection } from './components/journey/Stage3Protection';
+import { Stage4WasteSorting } from './components/journey/Stage4WasteSorting';
+import { JourneySummary } from './components/journey/JourneySummary';
 import { Heart, Globe2, Sparkles, BookOpen } from 'lucide-react';
 
 const APPS_SCRIPT_DIRECT_URL =
@@ -32,11 +38,20 @@ export function App() {
   const [progress, setProgress] = useState<UserLearningProgress>(() => {
     try {
       const saved = localStorage.getItem('green_planet_progress');
-      if (saved) return JSON.parse(saved);
+      if (saved) {
+        const parsed = JSON.parse(saved);
+        return {
+          ...parsed,
+          completedStages: parsed.completedStages || [],
+          stageScores: parsed.stageScores || {},
+        };
+      }
     } catch {}
     return {
       completedLessons: [],
       completedSimulations: [],
+      completedStages: [],
+      stageScores: {},
       practiceCompleted: 0,
       practiceTotal: 8,
       arenaAttempts: 0,
@@ -221,6 +236,46 @@ export function App() {
     });
   };
 
+  const handleCompleteStage = (stageNum: number, stageScore: number) => {
+    setProgress((prev) => {
+      const currentCompleted = prev.completedStages || [];
+      const updatedStages = currentCompleted.includes(stageNum)
+        ? currentCompleted
+        : [...currentCompleted, stageNum];
+
+      const updatedScores = {
+        ...(prev.stageScores || {}),
+        [stageNum]: stageScore,
+      };
+
+      const badges = [...prev.badges];
+      const stageBadgeMap: Record<number, string> = {
+        1: 'badge-detective',
+        2: 'badge-explorer',
+        3: 'badge-ambassador',
+        4: 'badge-green-family',
+      };
+      const badgeId = stageBadgeMap[stageNum];
+      if (badgeId && !badges.includes(badgeId)) {
+        badges.push(badgeId);
+      }
+
+      const next = {
+        ...prev,
+        completedStages: updatedStages,
+        stageScores: updatedScores,
+        badges,
+      };
+
+      syncProgressToCloud(
+        next,
+        `Hoàn thành Chặng ${stageNum}`,
+        `Đạt kết quả ${stageScore} điểm tại Chặng ${stageNum}`
+      );
+      return next;
+    });
+  };
+
   return (
     <div className="min-h-screen flex flex-col bg-[#FFFDF7] text-[#20352B]">
       {/* Top Bar Navigation */}
@@ -237,35 +292,52 @@ export function App() {
       {/* Main App Content Viewport - Full 16:9 widescreen layout */}
       <main className="flex-1 w-full px-3 sm:px-6 lg:px-8 2xl:px-12 pt-2.5 sm:pt-3.5 pb-2 overflow-x-hidden">
         {currentTab === 'home' && profile && (
-          <HomeDashboard
+          <AdventureMap
             profile={profile}
-            progress={progress}
-            onSelectTab={setCurrentTab}
-            onToggleAction={handleToggleDailyAction}
-          />
-        )}
-
-        {currentTab === 'lessons' && (
-          <TextbookLessons
-            completedLessons={progress.completedLessons}
-            onCompleteLesson={handleCompleteLesson}
+            completedStages={progress.completedStages || []}
+            stageScores={progress.stageScores || {}}
+            onSelectStage={(stageNum) => setCurrentTab(`stage-${stageNum}`)}
             onGoToArena={() => setCurrentTab('arena')}
+            onGoToLeaderboard={() => setCurrentTab('leaderboard')}
+            onGoToSummary={() => setCurrentTab('summary')}
           />
         )}
 
-        {currentTab === 'mindmap' && <InteractiveMindMap />}
-
-        {currentTab === 'practice' && (
-          <QuickPractice
-            onUpdateScore={handleUpdatePracticeScore}
-            onGoToSimulations={() => setCurrentTab('simulations')}
+        {currentTab === 'stage-1' && (
+          <Stage1Pollution
+            onCompleteStage={(scoreVal) => handleCompleteStage(1, scoreVal)}
+            onGoToNextStage={() => setCurrentTab('stage-2')}
           />
         )}
 
-        {currentTab === 'simulations' && (
-          <ScienceSimulations
-            completedSimulations={progress.completedSimulations}
-            onCompleteSimulation={handleCompleteSimulation}
+        {currentTab === 'stage-2' && (
+          <Stage2Erosion
+            onCompleteStage={(scoreVal) => handleCompleteStage(2, scoreVal)}
+            onGoToNextStage={() => setCurrentTab('stage-3')}
+          />
+        )}
+
+        {currentTab === 'stage-3' && (
+          <Stage3Protection
+            onCompleteStage={(scoreVal) => handleCompleteStage(3, scoreVal)}
+            onGoToNextStage={() => setCurrentTab('stage-4')}
+          />
+        )}
+
+        {currentTab === 'stage-4' && (
+          <Stage4WasteSorting
+            onCompleteStage={(res) => handleCompleteStage(4, 12)}
+            onFinishJourney={() => setCurrentTab('summary')}
+          />
+        )}
+
+        {currentTab === 'summary' && (
+          <JourneySummary
+            completedStages={progress.completedStages || []}
+            stageScores={progress.stageScores || {}}
+            onGoToArena={() => setCurrentTab('arena')}
+            onGoToLeaderboard={() => setCurrentTab('leaderboard')}
+            onBackToMap={() => setCurrentTab('home')}
           />
         )}
 

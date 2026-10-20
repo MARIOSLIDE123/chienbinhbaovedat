@@ -25,13 +25,13 @@ export const Header: React.FC<HeaderProps> = ({
   };
 
   const navItems = [
-    { id: 'home', label: 'Trang chủ' },
-    { id: 'lessons', label: 'Học tập' },
-    { id: 'mindmap', label: 'Sơ đồ' },
-    { id: 'practice', label: 'Luyện tập' },
-    { id: 'simulations', label: 'Thí nghiệm' },
-    { id: 'arena', label: 'Đấu trường' },
-    { id: 'leaderboard', label: 'Xếp hạng' },
+    { id: 'home', label: '🗺️ Bản đồ hành trình' },
+    { id: 'stage-1', label: 'Chặng 1' },
+    { id: 'stage-2', label: 'Chặng 2' },
+    { id: 'stage-3', label: 'Chặng 3' },
+    { id: 'stage-4', label: 'Chặng 4' },
+    { id: 'arena', label: '🏆 Đấu trường' },
+    { id: 'leaderboard', label: '🥇 Bảng vàng' },
   ];
 
   return (

@@ -57,6 +57,8 @@ export interface LeaderboardEntry {
 export interface UserLearningProgress {
   completedLessons: string[]; // ['soil-pollution', 'soil-erosion', 'soil-protection']
   completedSimulations: string[]; // ['erosion-rainfall', 'waste-journey', 'water-treatment']
+  completedStages: number[]; // [1, 2, 3, 4]
+  stageScores: Record<number, number>; // { 1: 5, 2: 5, 3: 5, 4: 12 }
   practiceCompleted: number; // number of practice activities finished
   practiceTotal: number;
   arenaAttempts: number;
