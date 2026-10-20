@@ -1,0 +1,31 @@
+@import "tailwindcss";
+
+:root {
+  /* Responsive fluid base typography:
+     - Automatically co-giãn mượt mà theo kích thước màn hình
+     - Tối ưu diện tích chuẩn 16:9 cho máy tính, màn hình tương tác, tivi lớp học
+     - Tăng nhẹ cỡ chữ để học sinh dễ đọc, không mỏi mắt
+  */
+  font-size: clamp(16px, 0.42rem + 0.88vw, 21.5px);
+}
+
+@layer utilities {
+  /* Hide scrollbar for Chrome, Safari and Opera */
+  .no-scrollbar::-webkit-scrollbar {
+    display: none;
+  }
+  /* Hide scrollbar for IE, Edge and Firefox */
+  .no-scrollbar {
+    -ms-overflow-style: none;  /* IE and Edge */
+    scrollbar-width: none;  /* Firefox */
+  }
+}
+
+@media print {
+  header, footer, button {
+    display: none !important;
+  }
+  body {
+    background-color: white !important;
+  }
+}
