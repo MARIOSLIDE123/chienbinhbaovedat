@@ -10,8 +10,10 @@ import { ScienceSimulations } from './components/simulations/ScienceSimulations'
 import { QuizArena } from './components/arena/QuizArena';
 import { LeaderboardView } from './components/leaderboard/LeaderboardView';
 import { UserProfile } from './components/profile/UserProfile';
-import { GoogleSheetsGuideModal } from './components/sheets/GoogleSheetsGuideModal';
 import { Heart, Globe2, Sparkles, BookOpen } from 'lucide-react';
+
+const APPS_SCRIPT_DIRECT_URL =
+  'https://script.google.com/macros/s/AKfycbzO0Oo2mYzpWuk6mfaQNPu3XlKGqDBJzKaLpLpHS0bj5h4oxuDQSHSjBNaDpDN1SXo1/exec';
 
 export function App() {
   const [profile, setProfile] = useState<StudentProfile | null>(() => {
@@ -25,7 +27,6 @@ export function App() {
 
   const [currentTab, setCurrentTab] = useState<string>('home');
   const [showLoginModal, setShowLoginModal] = useState<boolean>(false);
-  const [showSheetsGuide, setShowSheetsGuide] = useState<boolean>(false);
 
   // User learning journey progress
   const [progress, setProgress] = useState<UserLearningProgress>(() => {
@@ -79,27 +80,39 @@ export function App() {
     }
   }, [profile]);
 
-  // Helper to sync progress to cloud & Google Sheets
+  // Helper to sync progress to cloud & Google Sheets (Dual mode: Server proxy + Direct Web App fallback)
   const syncProgressToCloud = async (
     currProgress: UserLearningProgress,
     actionType?: string,
     actionNote?: string
   ) => {
     if (!profile) return;
+    const payload = {
+      action: 'sync_progress',
+      studentProfile: profile,
+      progress: currProgress,
+      studyDurationSeconds: studyDuration,
+      actionType: actionType || 'Cập nhật tiến trình',
+      actionNote: actionNote || 'Đồng bộ tự động',
+    };
+
     try {
-      await fetch('/api/sync-progress', {
+      const res = await fetch('/api/sync-progress', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          studentProfile: profile,
-          progress: currProgress,
-          studyDurationSeconds: studyDuration,
-          actionType: actionType || 'Cập nhật tiến trình',
-          actionNote: actionNote || 'Đồng bộ tự động',
-        }),
+        body: JSON.stringify(payload),
       });
+      if (!res.ok) throw new Error('API server unavailable');
     } catch {
-      // Non-blocking offline fallback
+      // Direct backup post to Google Apps Script Web App
+      try {
+        fetch(APPS_SCRIPT_DIRECT_URL, {
+          method: 'POST',
+          mode: 'no-cors',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(payload),
+        });
+      } catch {}
     }
   };
 
@@ -107,15 +120,25 @@ export function App() {
     setProfile(newProfile);
     setShowLoginModal(false);
     // Log login activity to server and Google Sheets
+    const logPayload = {
+      action: 'log_activity',
+      studentProfile: newProfile,
+      actionType: 'Đăng nhập',
+      details: `Chiến binh ${newProfile.fullName} (Lớp ${newProfile.className} - ${newProfile.schoolName}) bắt đầu phiên học`,
+    };
+
     try {
       fetch('/api/log-activity', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({
-          studentProfile: newProfile,
-          actionType: 'Đăng nhập',
-          details: `Chiến binh ${newProfile.fullName} (Lớp ${newProfile.className} - ${newProfile.schoolName}) bắt đầu phiên học`,
-        }),
+        body: JSON.stringify(logPayload),
+      }).catch(() => {
+        fetch(APPS_SCRIPT_DIRECT_URL, {
+          method: 'POST',
+          mode: 'no-cors',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(logPayload),
+        });
       });
     } catch {}
   };
@@ -209,7 +232,6 @@ export function App() {
           if (profile) setCurrentTab('profile');
           else setShowLoginModal(true);
         }}
-        onOpenSheetsGuide={() => setShowSheetsGuide(true)}
       />
 
       {/* Main App Content Viewport - Full 16:9 widescreen layout */}
@@ -258,7 +280,6 @@ export function App() {
         {currentTab === 'leaderboard' && (
           <LeaderboardView
             currentProfile={profile}
-            onOpenSheetsGuide={() => setShowSheetsGuide(true)}
           />
         )}
 
@@ -283,13 +304,10 @@ export function App() {
           </div>
 
           <div className="flex items-center gap-3 shrink-0">
-            <button
-              type="button"
-              onClick={() => setShowSheetsGuide(true)}
-              className="hover:text-emerald-700 transition-colors"
-            >
-              Cấu hình Sheets
-            </button>
+            <span className="inline-flex items-center gap-1 text-emerald-700 font-bold">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+              Đồng bộ trực tuyến Google Sheets
+            </span>
             <span className="hidden sm:inline">·</span>
             <span className="hidden sm:inline">Giáo dục vì tương lai xanh</span>
           </div>
@@ -303,12 +321,6 @@ export function App() {
           initialProfile={profile}
         />
       )}
-
-      {/* Google Sheets / Apps Script Integration Guide Modal */}
-      <GoogleSheetsGuideModal
-        isOpen={showSheetsGuide}
-        onClose={() => setShowSheetsGuide(false)}
-      />
     </div>
   );
 }

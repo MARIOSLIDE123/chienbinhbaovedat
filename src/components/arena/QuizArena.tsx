@@ -162,6 +162,19 @@ export const QuizArena: React.FC<QuizArenaProps> = ({
       }
 
       if (!attemptResult) {
+        // Direct backup post to Google Apps Script Web App
+        try {
+          fetch(
+            'https://script.google.com/macros/s/AKfycbzO0Oo2mYzpWuk6mfaQNPu3XlKGqDBJzKaLpLpHS0bj5h4oxuDQSHSjBNaDpDN1SXo1/exec',
+            {
+              method: 'POST',
+              mode: 'no-cors',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify(payload),
+            }
+          );
+        } catch {}
+
         const fallbackCorrect = Object.entries(selectedAnswers).filter(([qid, choice]) => {
           const q = OFFICIAL_QUESTIONS.find((item) => item.id === qid);
           return q && q.correctOption === choice;

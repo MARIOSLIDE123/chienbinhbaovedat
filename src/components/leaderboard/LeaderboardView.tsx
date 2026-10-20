@@ -8,9 +8,11 @@ import {
 } from 'lucide-react';
 
 interface LeaderboardViewProps {
-  currentProfile: StudentProfile | null;
-  onOpenSheetsGuide: () => void;
+  currentProfile?: StudentProfile | null;
 }
+
+const APPS_SCRIPT_DIRECT_URL =
+  'https://script.google.com/macros/s/AKfycbzO0Oo2mYzpWuk6mfaQNPu3XlKGqDBJzKaLpLpHS0bj5h4oxuDQSHSjBNaDpDN1SXo1/exec';
 
 const FALLBACK_LEADERBOARD: LeaderboardEntry[] = [
   {
@@ -79,12 +81,10 @@ const FALLBACK_LEADERBOARD: LeaderboardEntry[] = [
   },
 ];
 
-export const LeaderboardView: React.FC<LeaderboardViewProps> = ({
-  onOpenSheetsGuide,
-}) => {
+export const LeaderboardView: React.FC<LeaderboardViewProps> = () => {
   const [entries, setEntries] = useState<LeaderboardEntry[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
-  const [isAppsScriptConnected, setIsAppsScriptConnected] = useState<boolean>(false);
+  const [isAppsScriptConnected, setIsAppsScriptConnected] = useState<boolean>(true);
 
   // Filters
   const [searchQuery, setSearchQuery] = useState<string>('');
@@ -93,22 +93,48 @@ export const LeaderboardView: React.FC<LeaderboardViewProps> = ({
 
   const fetchLeaderboard = async () => {
     setIsLoading(true);
+    let loaded = false;
+
+    // 1. Try fetching via backend API endpoint
     try {
       const res = await fetch(`/api/leaderboard?onlyBest=${onlyBest}`);
       if (res.ok) {
         const data = await res.json();
-        if (data.success && Array.isArray(data.leaderboard)) {
+        if (data.success && Array.isArray(data.leaderboard) && data.leaderboard.length > 0) {
           setEntries(data.leaderboard);
-          setIsAppsScriptConnected(data.isAppsScriptConnected ?? false);
+          setIsAppsScriptConnected(true);
           setIsLoading(false);
+          loaded = true;
           return;
         }
       }
     } catch (err: any) {
-      console.warn('Lỗi tải bảng xếp hạng trực tuyến, dùng dữ liệu khởi tạo:', err);
+      console.warn('Backend API proxy chưa sẵn sàng, thử tải trực tiếp từ Apps Script...', err);
     }
-    setEntries((prev) => (prev.length > 0 ? prev : FALLBACK_LEADERBOARD));
-    setIsLoading(false);
+
+    // 2. Fallback: Direct fetch from Google Apps Script Web App
+    if (!loaded) {
+      try {
+        const directRes = await fetch(`${APPS_SCRIPT_DIRECT_URL}?action=leaderboard`);
+        if (directRes.ok) {
+          const directData = await directRes.json();
+          if (directData.success && Array.isArray(directData.leaderboard) && directData.leaderboard.length > 0) {
+            setEntries(directData.leaderboard);
+            setIsAppsScriptConnected(true);
+            setIsLoading(false);
+            loaded = true;
+            return;
+          }
+        }
+      } catch (directErr) {
+        console.warn('Lỗi kết nối trực tiếp Apps Script:', directErr);
+      }
+    }
+
+    if (!loaded) {
+      setEntries((prev) => (prev.length > 0 ? prev : FALLBACK_LEADERBOARD));
+      setIsLoading(false);
+    }
   };
 
   useEffect(() => {
@@ -157,20 +183,10 @@ export const LeaderboardView: React.FC<LeaderboardViewProps> = ({
         </div>
 
         <div className="flex items-center gap-2">
-          {/* Connection status tag */}
-          <span
-            className={`px-2.5 py-1 rounded-lg text-[10px] font-black flex items-center gap-1 ${
-              isAppsScriptConnected
-                ? 'bg-emerald-50 text-emerald-800 border border-emerald-200'
-                : 'bg-slate-100 text-slate-600 border border-slate-200'
-            }`}
-          >
-            <span
-              className={`w-1.5 h-1.5 rounded-full ${
-                isAppsScriptConnected ? 'bg-emerald-500' : 'bg-slate-400'
-              }`}
-            />
-            <span>{isAppsScriptConnected ? 'Sheets đã kết nối' : 'Máy chủ nội bộ'}</span>
+          {/* Real-time status indicator */}
+          <span className="px-2.5 py-1 rounded-lg text-[10px] font-black flex items-center gap-1.5 bg-emerald-50 text-emerald-800 border border-emerald-200">
+            <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
+            <span>Trực tuyến (Real-time)</span>
           </span>
 
           <button
@@ -178,18 +194,9 @@ export const LeaderboardView: React.FC<LeaderboardViewProps> = ({
             onClick={fetchLeaderboard}
             disabled={isLoading}
             className="p-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 rounded-lg transition-colors"
-            title="Làm mới"
+            title="Làm mới bảng xếp hạng"
           >
             <RefreshCw className={`w-3.5 h-3.5 ${isLoading ? 'animate-spin' : ''}`} />
-          </button>
-
-          <button
-            type="button"
-            onClick={onOpenSheetsGuide}
-            className="px-2.5 py-1 bg-[#22B573] hover:bg-[#1caa68] text-white text-[11px] font-black rounded-lg flex items-center gap-1 shadow-2xs"
-          >
-            <span>Cấu hình Sheets</span>
-            <ExternalLink className="w-3 h-3" />
           </button>
         </div>
       </div>

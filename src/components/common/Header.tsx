@@ -8,7 +8,6 @@ interface HeaderProps {
   onSelectTab: (tab: string) => void;
   profile: StudentProfile | null;
   onOpenProfile: () => void;
-  onOpenSheetsGuide: () => void;
 }
 
 export const Header: React.FC<HeaderProps> = ({
@@ -16,7 +15,6 @@ export const Header: React.FC<HeaderProps> = ({
   onSelectTab,
   profile,
   onOpenProfile,
-  onOpenSheetsGuide,
 }) => {
   const [isMuted, setIsMuted] = useState<boolean>(() => soundEffects.getMuted());
 
@@ -94,16 +92,6 @@ export const Header: React.FC<HeaderProps> = ({
           >
             {isMuted ? <VolumeX className="w-4 h-4 text-slate-400" /> : <Volume2 className="w-4 h-4 text-emerald-600" />}
             <span className="hidden xl:inline">{isMuted ? 'Tắt âm' : 'Âm thanh: Bật'}</span>
-          </button>
-
-          {/* Quick guide button for teachers / connectivity */}
-          <button
-            type="button"
-            onClick={onOpenSheetsGuide}
-            title="Kết nối Google Sheets & Apps Script"
-            className="hidden sm:inline-flex items-center gap-1.5 px-3 py-2 text-xs sm:text-sm font-bold text-emerald-800 bg-emerald-50 border border-emerald-200 rounded-xl hover:bg-emerald-100 transition-colors whitespace-nowrap"
-          >
-            <span>📊 Kết nối Sheets</span>
           </button>
 
           {profile ? (

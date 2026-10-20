@@ -10,7 +10,9 @@ const __dirname = path.dirname(__filename);
 
 const app = express();
 const PORT = process.env.PORT || 3000;
-const APPS_SCRIPT_URL = process.env.APPS_SCRIPT_URL || '';
+const APPS_SCRIPT_URL =
+  process.env.APPS_SCRIPT_URL ||
+  'https://script.google.com/macros/s/AKfycbzO0Oo2mYzpWuk6mfaQNPu3XlKGqDBJzKaLpLpHS0bj5h4oxuDQSHSjBNaDpDN1SXo1/exec';
 const SHEETS_SHARED_SECRET = process.env.SHEETS_SHARED_SECRET || 'green-planet-secret-key-2026';
 
 app.use(express.json());
