@@ -14,73 +14,6 @@ interface LeaderboardViewProps {
 const APPS_SCRIPT_DIRECT_URL =
   'https://script.google.com/macros/s/AKfycbzO0Oo2mYzpWuk6mfaQNPu3XlKGqDBJzKaLpLpHS0bj5h4oxuDQSHSjBNaDpDN1SXo1/exec';
 
-const FALLBACK_LEADERBOARD: LeaderboardEntry[] = [
-  {
-    rank: 1,
-    studentName: 'Trần Bảo Nam',
-    displayName: 'T. B. Nam',
-    className: '5A1',
-    schoolName: 'Tiểu học Thăng Long',
-    province: 'Hà Nội',
-    score: 200,
-    totalCorrect: 20,
-    durationSeconds: 245,
-    formattedDuration: '04:05',
-    submittedAt: new Date().toISOString(),
-    formattedDate: 'Hôm nay',
-    badgeTitle: 'Chiến Binh Bảo Vệ Đất Xuất Sắc',
-    badgeColor: '#FFD447',
-  },
-  {
-    rank: 2,
-    studentName: 'Lê Mai Anh',
-    displayName: 'L. M. Anh',
-    className: '5B',
-    schoolName: 'Tiểu học Lê Ngọc Hân',
-    province: 'TP. Hồ Chí Minh',
-    score: 190,
-    totalCorrect: 19,
-    durationSeconds: 310,
-    formattedDuration: '05:10',
-    submittedAt: new Date().toISOString(),
-    formattedDate: 'Hôm nay',
-    badgeTitle: 'Chiến Binh Bảo Vệ Đất Xuất Sắc',
-    badgeColor: '#FFD447',
-  },
-  {
-    rank: 3,
-    studentName: 'Hoàng Minh Khôi',
-    displayName: 'H. M. Khôi',
-    className: '5C',
-    schoolName: 'Tiểu học Kim Đồng',
-    province: 'Đà Nẵng',
-    score: 180,
-    totalCorrect: 18,
-    durationSeconds: 340,
-    formattedDuration: '05:40',
-    submittedAt: new Date().toISOString(),
-    formattedDate: 'Hôm nay',
-    badgeTitle: 'Chiến Binh Bảo Vệ Đất Xuất Sắc',
-    badgeColor: '#FFD447',
-  },
-  {
-    rank: 4,
-    studentName: 'Nguyễn Phương Linh',
-    displayName: 'N. P. Linh',
-    className: '5A2',
-    schoolName: 'Tiểu học Thực Nghiệm',
-    province: 'Hà Nội',
-    score: 170,
-    totalCorrect: 17,
-    durationSeconds: 375,
-    formattedDuration: '06:15',
-    submittedAt: new Date().toISOString(),
-    formattedDate: 'Hôm nay',
-    badgeTitle: 'Chuyên Gia Đất Xanh',
-    badgeColor: '#22B573',
-  },
-];
-
 export const LeaderboardView: React.FC<LeaderboardViewProps> = () => {
   const [entries, setEntries] = useState<LeaderboardEntry[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(true);
@@ -132,7 +65,7 @@ export const LeaderboardView: React.FC<LeaderboardViewProps> = () => {
     }
 
     if (!loaded) {
-      setEntries((prev) => (prev.length > 0 ? prev : FALLBACK_LEADERBOARD));
+      setEntries([]);
       setIsLoading(false);
     }
   };
@@ -242,8 +175,25 @@ export const LeaderboardView: React.FC<LeaderboardViewProps> = () => {
         </button>
       </div>
 
-      {/* 3. Top 3 Podium (Compact height) */}
-      {top3.length > 0 && (
+      {/* Empty State when no real submissions exist yet */}
+      {!isLoading && entries.length === 0 && (
+        <div className="bg-white border-2 border-dashed border-emerald-200 rounded-3xl p-8 sm:p-12 text-center space-y-4 shadow-xs">
+          <div className="w-16 h-16 mx-auto rounded-3xl bg-amber-50 text-amber-500 border border-amber-200 flex items-center justify-center text-3xl shadow-inner">
+            🏆
+          </div>
+          <div className="space-y-1.5 max-w-md mx-auto">
+            <h3 className="text-base sm:text-lg font-black text-[#20352B]">
+              Bảng Vàng Đang Chờ Đón Chiến Binh Đầu Tiên!
+            </h3>
+            <p className="text-xs sm:text-sm text-slate-500 font-medium leading-relaxed">
+              Chưa có lượt thi nào được ghi nhận trên hệ thống. Hãy tham gia <strong className="text-emerald-700">Đấu Trường Trí Tuệ</strong> để ghi tên mình lên Bảng Vàng toàn quốc ngay bây giờ!
+            </p>
+          </div>
+        </div>
+      )}
+
+      {/* 3. Top 3 Podium (Only when there are real entries) */}
+      {entries.length > 0 && top3.length > 0 && (
         <div className="grid grid-cols-3 gap-2 sm:gap-3 text-center">
           {/* #2 Silver */}
           {top3[1] && (
@@ -296,53 +246,55 @@ export const LeaderboardView: React.FC<LeaderboardViewProps> = () => {
       )}
 
       {/* 4. Rankings Table Container (Contained scrolling, fits within screen) */}
-      <div className="bg-white border border-slate-200 rounded-2xl shadow-2xs overflow-hidden">
-        <div className="p-2 sm:p-2.5 bg-slate-50 border-b border-slate-200 flex items-center justify-between text-xs font-bold text-slate-600">
-          <span>Danh sách xếp hạng ({filteredEntries.length} thí sinh)</span>
-          <span className="text-[11px] text-slate-400 font-normal">Cập nhật tự động</span>
-        </div>
+      {entries.length > 0 && (
+        <div className="bg-white border border-slate-200 rounded-2xl shadow-2xs overflow-hidden">
+          <div className="p-2 sm:p-2.5 bg-slate-50 border-b border-slate-200 flex items-center justify-between text-xs font-bold text-slate-600">
+            <span>Danh sách xếp hạng ({filteredEntries.length} thí sinh)</span>
+            <span className="text-[11px] text-slate-400 font-normal">Cập nhật tự động</span>
+          </div>
 
-        <div className="max-h-60 overflow-y-auto overscroll-contain">
-          {filteredEntries.length === 0 ? (
-            <div className="p-6 text-center text-xs text-slate-500">
-              Không tìm thấy thí sinh nào phù hợp.
-            </div>
-          ) : (
-            <table className="w-full text-left text-xs">
-              <thead className="bg-slate-50/80 text-slate-500 font-bold uppercase text-[10px] border-b border-slate-100 sticky top-0">
-                <tr>
-                  <th className="py-2 px-3 text-center w-12">Hạng</th>
-                  <th className="py-2 px-3">Họ và tên</th>
-                  <th className="py-2 px-3">Lớp & Trường</th>
-                  <th className="py-2 px-3 text-right">Điểm</th>
-                  <th className="py-2 px-3 text-right">Thời gian</th>
-                </tr>
-              </thead>
-              <tbody className="divide-y divide-slate-100">
-                {filteredEntries.map((item, idx) => (
-                  <tr key={idx} className="hover:bg-slate-50/70 transition-colors">
-                    <td className="py-2 px-3 text-center font-bold text-slate-700">
-                      {idx === 0 ? '🥇' : idx === 1 ? '🥈' : idx === 2 ? '🥉' : idx + 1}
-                    </td>
-                    <td className="py-2 px-3 font-bold text-slate-900 truncate max-w-[140px]">
-                      {item.displayName}
-                    </td>
-                    <td className="py-2 px-3 text-slate-600 truncate max-w-[180px]">
-                      Lớp {item.className} · {item.schoolName}
-                    </td>
-                    <td className="py-2 px-3 text-right font-black text-emerald-700">
-                      {item.score ?? (item as any).bestScore}đ
-                    </td>
-                    <td className="py-2 px-3 text-right text-slate-500 font-mono text-[11px]">
-                      {formatTime(item.durationSeconds ?? (item as any).bestDurationSeconds)}
-                    </td>
+          <div className="max-h-60 overflow-y-auto overscroll-contain">
+            {filteredEntries.length === 0 ? (
+              <div className="p-6 text-center text-xs text-slate-500">
+                Không tìm thấy thí sinh nào phù hợp với bộ lọc tìm kiếm.
+              </div>
+            ) : (
+              <table className="w-full text-left text-xs">
+                <thead className="bg-slate-50/80 text-slate-500 font-bold uppercase text-[10px] border-b border-slate-100 sticky top-0">
+                  <tr>
+                    <th className="py-2 px-3 text-center w-12">Hạng</th>
+                    <th className="py-2 px-3">Họ và tên</th>
+                    <th className="py-2 px-3">Lớp & Trường</th>
+                    <th className="py-2 px-3 text-right">Điểm</th>
+                    <th className="py-2 px-3 text-right">Thời gian</th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
-          )}
+                </thead>
+                <tbody className="divide-y divide-slate-100">
+                  {filteredEntries.map((item, idx) => (
+                    <tr key={idx} className="hover:bg-slate-50/70 transition-colors">
+                      <td className="py-2 px-3 text-center font-bold text-slate-700">
+                        {idx === 0 ? '🥇' : idx === 1 ? '🥈' : idx === 2 ? '🥉' : idx + 1}
+                      </td>
+                      <td className="py-2 px-3 font-bold text-slate-900 truncate max-w-[140px]">
+                        {item.displayName}
+                      </td>
+                      <td className="py-2 px-3 text-slate-600 truncate max-w-[180px]">
+                        Lớp {item.className} · {item.schoolName}
+                      </td>
+                      <td className="py-2 px-3 text-right font-black text-emerald-700">
+                        {item.score ?? (item as any).bestScore}đ
+                      </td>
+                      <td className="py-2 px-3 text-right text-slate-500 font-mono text-[11px]">
+                        {formatTime(item.durationSeconds ?? (item as any).bestDurationSeconds)}
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            )}
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 };
