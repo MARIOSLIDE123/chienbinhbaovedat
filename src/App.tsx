@@ -45,6 +45,28 @@ export function App() {
     };
   });
 
+  // Total study duration tracking in seconds
+  const [studyDuration, setStudyDuration] = useState<number>(() => {
+    try {
+      const saved = localStorage.getItem('green_planet_study_seconds');
+      return saved ? parseInt(saved, 10) : 0;
+    } catch {
+      return 0;
+    }
+  });
+
+  // Increment study duration every 10s while tab is open
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setStudyDuration((prev) => {
+        const next = prev + 10;
+        localStorage.setItem('green_planet_study_seconds', next.toString());
+        return next;
+      });
+    }, 10000);
+    return () => clearInterval(timer);
+  }, []);
+
   // Save progress to local storage
   useEffect(() => {
     localStorage.setItem('green_planet_progress', JSON.stringify(progress));
@@ -57,9 +79,45 @@ export function App() {
     }
   }, [profile]);
 
+  // Helper to sync progress to cloud & Google Sheets
+  const syncProgressToCloud = async (
+    currProgress: UserLearningProgress,
+    actionType?: string,
+    actionNote?: string
+  ) => {
+    if (!profile) return;
+    try {
+      await fetch('/api/sync-progress', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          studentProfile: profile,
+          progress: currProgress,
+          studyDurationSeconds: studyDuration,
+          actionType: actionType || 'Cập nhật tiến trình',
+          actionNote: actionNote || 'Đồng bộ tự động',
+        }),
+      });
+    } catch {
+      // Non-blocking offline fallback
+    }
+  };
+
   const handleLogin = (newProfile: StudentProfile) => {
     setProfile(newProfile);
     setShowLoginModal(false);
+    // Log login activity to server and Google Sheets
+    try {
+      fetch('/api/log-activity', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          studentProfile: newProfile,
+          actionType: 'Đăng nhập',
+          details: `Chiến binh ${newProfile.fullName} (Lớp ${newProfile.className} - ${newProfile.schoolName}) bắt đầu phiên học`,
+        }),
+      });
+    } catch {}
   };
 
   const handleLogout = () => {
@@ -76,7 +134,9 @@ export function App() {
       if (updatedLessons.length >= 3 && !badges.includes('badge-reader')) {
         badges.push('badge-reader');
       }
-      return { ...prev, completedLessons: updatedLessons, badges };
+      const updated = { ...prev, completedLessons: updatedLessons, badges };
+      syncProgressToCloud(updated, 'Hoàn thành bài học', `Học xong bài: ${lessonId}`);
+      return updated;
     });
   };
 
@@ -88,15 +148,21 @@ export function App() {
       if (updatedSims.length >= 3 && !badges.includes('badge-scientist')) {
         badges.push('badge-scientist');
       }
-      return { ...prev, completedSimulations: updatedSims, badges };
+      const updated = { ...prev, completedSimulations: updatedSims, badges };
+      syncProgressToCloud(updated, 'Hoàn thành thí nghiệm', `Hoàn thành thí nghiệm mô phỏng: ${simId}`);
+      return updated;
     });
   };
 
   const handleUpdatePracticeScore = (correctCount: number) => {
-    setProgress((prev) => ({
-      ...prev,
-      practiceCompleted: Math.max(prev.practiceCompleted, correctCount),
-    }));
+    setProgress((prev) => {
+      const next = {
+        ...prev,
+        practiceCompleted: Math.max(prev.practiceCompleted, correctCount),
+      };
+      syncProgressToCloud(next, 'Thử tài nhanh trí', `Đạt ${correctCount}/8 thử thách`);
+      return next;
+    });
   };
 
   const handleFinishQuiz = (attempt: QuizAttempt) => {
@@ -105,12 +171,14 @@ export function App() {
       if (attempt.score >= 180 && !badges.includes('badge-arena-master')) {
         badges.push('badge-arena-master');
       }
-      return {
+      const next = {
         ...prev,
         arenaAttempts: prev.arenaAttempts + 1,
         highestScore: Math.max(prev.highestScore, attempt.score),
         badges,
       };
+      syncProgressToCloud(next, 'Thi Đấu Trường', `Điểm: ${attempt.score}/200 trong ${attempt.durationSeconds}s`);
+      return next;
     });
   };
 
@@ -124,7 +192,9 @@ export function App() {
       if (updated.length >= 3 && !badges.includes('badge-action-hero')) {
         badges.push('badge-action-hero');
       }
-      return { ...prev, checklistActions: updated, badges };
+      const nextProgress = { ...prev, checklistActions: updated, badges };
+      syncProgressToCloud(nextProgress, 'Cam kết việc tốt', `Thực hiện hành động: ${actionId}`);
+      return nextProgress;
     });
   };
 

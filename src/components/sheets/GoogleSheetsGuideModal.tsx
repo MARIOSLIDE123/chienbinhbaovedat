@@ -28,7 +28,8 @@ export const GoogleSheetsGuideModal: React.FC<GoogleSheetsGuideModalProps> = ({
 
   const codeSnippet = `/**
  * HÀNH TINH XANH – CHIẾN BINH BẢO VỆ ĐẤT
- * GOOGLE APPS SCRIPT BACKEND CHẤM ĐIỂM VÀ ĐỒNG BỘ BẢNG XẾP HẠNG
+ * GOOGLE APPS SCRIPT BACKEND CHẤM ĐIỂM, ĐỒNG BỘ DỮ LIỆU & BẢNG XẾP HẠNG REAL-TIME
+ * Xem đầy đủ tệp tại google-apps-script/Code.gs
  */
 var MASTER_ANSWER_KEY = {
   "Q01": "B", "Q02": "C", "Q03": "D", "Q04": "B", "Q05": "A",
@@ -53,47 +54,21 @@ function doPost(e) {
       .setMimeType(ContentService.MimeType.JSON);
   }
   try {
-    var rawData = e.postData ? e.postData.contents : "{}";
-    var payload = JSON.parse(rawData);
+    var payload = JSON.parse(e.postData ? e.postData.contents : "{}");
+    var action = payload.action || (payload.answers ? 'score' : 'sync_progress');
     var ss = SpreadsheetApp.getActiveSpreadsheet();
-    var scoresSheet = ss.getSheetByName("Scores") || (setupSpreadsheet(), ss.getSheetByName("Scores"));
-    var attemptId = payload.attemptId || ("att_" + new Date().getTime());
-    
-    // Chấm điểm server-side
-    var rawAnswers = payload.answers || [];
-    var correctCount = 0;
-    var answersSummary = {};
-    rawAnswers.forEach(function(item) {
-      answersSummary[item.questionId] = item.selectedOption;
-      if (MASTER_ANSWER_KEY[item.questionId] === item.selectedOption) correctCount++;
-    });
 
-    var p = payload.studentProfile || {};
-    scoresSheet.appendRow([
-      attemptId, p.fullName, p.useAbbreviatedName ? maskName(p.fullName) : p.fullName,
-      p.className, p.schoolName, p.province || "", correctCount * 10,
-      correctCount, 20, payload.durationSeconds, payload.startedAt, payload.submittedAt,
-      payload.isTimeout ? "timeout" : "completed", JSON.stringify(answersSummary)
-    ]);
+    if (action === 'score' || payload.answers) return handleQuizSubmission(ss, payload);
+    if (action === 'sync_progress') return handleProgressSync(ss, payload);
+    if (action === 'log_activity') return handleActivityLog(ss, payload);
 
-    updateLeaderboardSheet(ss);
-    return ContentService.createTextOutput(JSON.stringify({
-      success: true,
-      attempt: { score: correctCount * 10, totalCorrect: correctCount, durationSeconds: payload.durationSeconds }
-    })).setMimeType(ContentService.MimeType.JSON);
+    return ContentService.createTextOutput(JSON.stringify({ success: false, message: "Lỗi action" }))
+      .setMimeType(ContentService.MimeType.JSON);
   } finally {
     lock.releaseLock();
   }
 }
-
-function setupSpreadsheet() {
-  var ss = SpreadsheetApp.getActiveSpreadsheet();
-  var s1 = ss.getSheetByName("Scores") || ss.insertSheet("Scores");
-  s1.clearContents().appendRow(["AttemptId", "StudentName", "DisplayName", "Class", "School", "Province", "Score", "TotalCorrect", "TotalQuestions", "DurationSeconds", "StartedAt", "SubmittedAt", "Status", "AnswersJSON"]);
-  var s2 = ss.getSheetByName("Leaderboard") || ss.insertSheet("Leaderboard");
-  s2.clearContents().appendRow(["Rank", "DisplayName", "Class", "School", "Province", "BestScore", "BestCorrect", "DurationSeconds", "SubmittedAt", "Attempts"]);
-}
-/* Xem đầy đủ tại tệp google-apps-script/Code.gs */`;
+/* Xem toàn bộ mã nguồn 400 dòng tại file google-apps-script/Code.gs */`;
 
   const copyCode = () => {
     navigator.clipboard.writeText(codeSnippet);
@@ -205,7 +180,15 @@ function setupSpreadsheet() {
               <span>Chạy hàm setupSpreadsheet() lần đầu</span>
             </h4>
             <p className="pl-8 leading-relaxed font-medium">
-              Trong trình soạn thảo Apps Script, tại ô danh sách hàm chọn <strong>setupSpreadsheet</strong> và bấm nút <strong>Chạy (Run)</strong>. Cấp quyền truy cập khi Google yêu cầu. Hàm này sẽ tự động kẻ bảng, tạo 2 trang tính <strong>Scores</strong> và <strong>Leaderboard</strong> với tiêu đề màu xanh lá tuyệt đẹp!
+              Trong trình soạn thảo Apps Script, tại thanh công cụ chọn hàm <strong>setupSpreadsheet</strong> và bấm nút <strong>Chạy (Run)</strong>. Cấp quyền truy cập khi Google yêu cầu. Hàm này sẽ tự động tạo và định dạng 4 trang tính:
+              <br />
+              • 🏆 <strong>Leaderboard:</strong> Bảng vàng xếp hạng trực tuyến tự động sắp xếp theo điểm và thời gian.
+              <br />
+              • 📝 <strong>Scores:</strong> Lưu chi tiết bài thi Đấu Trường Trí Tuệ và đáp án 20 câu.
+              <br />
+              • 📊 <strong>StudentProgress:</strong> Lưu tiến trình học (bài học SGK, thí nghiệm, thực hành, việc tốt, thời lượng học qua app).
+              <br />
+              • ⚡ <strong>ActivityLogs:</strong> Nhật ký ghi nhận tức thời mọi hành động (đăng nhập, hoàn thành bài, nộp bài,...).
             </p>
           </div>
 

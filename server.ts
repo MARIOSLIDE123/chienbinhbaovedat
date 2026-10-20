@@ -401,6 +401,93 @@ app.post('/api/score', async (req, res) => {
   }
 });
 
+// POST Sync Student Progress API (Lessons, Simulations, Checklist, Study Duration)
+app.post('/api/sync-progress', async (req, res) => {
+  try {
+    const { studentProfile, progress, studyDurationSeconds, actionType, actionNote } = req.body;
+    if (!studentProfile || !studentProfile.fullName) {
+      return res.status(400).json({ success: false, message: 'Thiếu thông tin học sinh.' });
+    }
+
+    let forwardedToSheets = false;
+    if (APPS_SCRIPT_URL && APPS_SCRIPT_URL.trim().length > 0) {
+      try {
+        const controller = new AbortController();
+        const timeout = setTimeout(() => controller.abort(), 6000);
+
+        const forwardRes = await fetch(APPS_SCRIPT_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            action: 'sync_progress',
+            studentProfile,
+            progress,
+            studyDurationSeconds,
+            actionType,
+            actionNote,
+            secret: SHEETS_SHARED_SECRET,
+          }),
+          signal: controller.signal,
+        });
+        clearTimeout(timeout);
+        if (forwardRes.ok) {
+          forwardedToSheets = true;
+        }
+      } catch (err) {
+        console.warn('Không thể gửi tiến trình sang Google Apps Script:', err);
+      }
+    }
+
+    return res.json({
+      success: true,
+      message: 'Đồng bộ tiến trình thành công!',
+      forwardedToSheets,
+    });
+  } catch (err: any) {
+    return res.status(500).json({ success: false, message: err.message });
+  }
+});
+
+// POST Log Activity API (Real-time actions stream)
+app.post('/api/log-activity', async (req, res) => {
+  try {
+    const { studentProfile, actionType, details } = req.body;
+    let forwardedToSheets = false;
+    if (APPS_SCRIPT_URL && APPS_SCRIPT_URL.trim().length > 0) {
+      try {
+        const controller = new AbortController();
+        const timeout = setTimeout(() => controller.abort(), 6000);
+
+        const forwardRes = await fetch(APPS_SCRIPT_URL, {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({
+            action: 'log_activity',
+            studentProfile,
+            actionType,
+            details,
+            secret: SHEETS_SHARED_SECRET,
+          }),
+          signal: controller.signal,
+        });
+        clearTimeout(timeout);
+        if (forwardRes.ok) {
+          forwardedToSheets = true;
+        }
+      } catch (err) {
+        console.warn('Không thể gửi nhật ký sang Google Apps Script:', err);
+      }
+    }
+
+    return res.json({
+      success: true,
+      forwardedToSheets,
+    });
+  } catch (err: any) {
+    return res.status(500).json({ success: false, message: err.message });
+  }
+});
+
 // Vite Middleware for development & Static files in production
 async function startServer() {
   const isProd = process.env.NODE_ENV === 'production';
