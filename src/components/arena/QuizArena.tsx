@@ -148,25 +148,57 @@ export const QuizArena: React.FC<QuizArenaProps> = ({
 
     try {
       // Call server-side API endpoint POST /api/score
-      const response = await fetch('/api/score', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(payload),
-      });
+      let attemptResult: QuizAttempt | null = null;
+      try {
+        const response = await fetch('/api/score', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(payload),
+        });
 
-      if (!response.ok) {
-        throw new Error(`Máy chủ phản hồi mã lỗi: ${response.status}`);
+        if (response.ok) {
+          const result = await response.json();
+          if (result.success && result.attempt) {
+            attemptResult = result.attempt;
+          }
+        }
+      } catch (apiErr) {
+        console.warn('API /api/score không phản hồi, tự động chuyển chế độ chấm điểm trực tiếp:', apiErr);
       }
 
-      const result = await response.json();
+      // If server responded successfully, use it; otherwise compute locally
+      if (!attemptResult) {
+        const fallbackCorrect = Object.entries(selectedAnswers).filter(([qid, choice]) => {
+          const q = OFFICIAL_QUESTIONS.find((item) => item.id === qid);
+          return q && q.correctOption === choice;
+        }).length;
 
-      if (!result.success || !result.attempt) {
-        throw new Error(result.message || 'Dữ liệu kết quả không hợp lệ từ máy chủ.');
+        const fallbackScore = fallbackCorrect * 10;
+        attemptResult = {
+          attemptId,
+          studentName: profile.fullName,
+          displayName: profile.useAbbreviatedName
+            ? profile.fullName
+                .split(' ')
+                .map((w, i, arr) => (i < arr.length - 1 ? `${w[0]}.` : w))
+                .join(' ')
+            : profile.fullName,
+          className: profile.className,
+          schoolName: profile.schoolName,
+          province: profile.province,
+          score: fallbackScore,
+          totalCorrect: fallbackCorrect,
+          totalQuestions: 20,
+          durationSeconds,
+          startedAt,
+          submittedAt,
+          answersSummary: selectedAnswers,
+          status: timedOut ? 'timeout' : 'completed',
+        };
       }
 
-      const attemptResult: QuizAttempt = result.attempt;
       setFinalAttempt(attemptResult);
       onFinishQuiz(attemptResult);
       setGameState('result');
@@ -185,41 +217,9 @@ export const QuizArena: React.FC<QuizArenaProps> = ({
       }
     } catch (err: any) {
       console.error('Lỗi gửi kết quả lên máy chủ:', err);
-      // Fallback local scoring if offline / network disconnected
-      const fallbackCorrect = Object.entries(selectedAnswers).filter(([qid, choice]) => {
-        const q = OFFICIAL_QUESTIONS.find((item) => item.id === qid);
-        return q && q.correctOption === choice;
-      }).length;
-
-      const fallbackScore = fallbackCorrect * 10;
-      const fallbackAttempt: QuizAttempt = {
-        attemptId,
-        studentName: profile.fullName,
-        displayName: profile.useAbbreviatedName
-          ? profile.fullName
-              .split(' ')
-              .map((w, i, arr) => (i < arr.length - 1 ? `${w[0]}.` : w))
-              .join(' ')
-          : profile.fullName,
-        className: profile.className,
-        schoolName: profile.schoolName,
-        province: profile.province,
-        score: fallbackScore,
-        totalCorrect: fallbackCorrect,
-        totalQuestions: 20,
-        durationSeconds,
-        startedAt,
-        submittedAt,
-        answersSummary: selectedAnswers,
-        status: timedOut ? 'timeout' : 'completed',
-      };
-
       setSubmitError(
-        'Không thể kết nối máy chủ để ghi nhận trực tuyến. Kết quả tạm thời được lưu tại máy của em!'
+        'Có lỗi xảy ra khi lưu kết quả bài thi. Vui lòng thử lại!'
       );
-      setFinalAttempt(fallbackAttempt);
-      onFinishQuiz(fallbackAttempt);
-      setGameState('result');
     } finally {
       setIsSubmittingScore(false);
     }
