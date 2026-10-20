@@ -142,8 +142,8 @@ export function App() {
         onOpenSheetsGuide={() => setShowSheetsGuide(true)}
       />
 
-      {/* Main App Content Viewport - Optimized for single-screen view */}
-      <main className="flex-1 w-full max-w-6xl mx-auto px-2.5 sm:px-4 md:px-6 pt-2.5 sm:pt-3.5 pb-2 overflow-x-hidden">
+      {/* Main App Content Viewport - Full 16:9 widescreen layout */}
+      <main className="flex-1 w-full px-3 sm:px-6 lg:px-8 2xl:px-12 pt-2.5 sm:pt-3.5 pb-2 overflow-x-hidden">
         {currentTab === 'home' && profile && (
           <HomeDashboard
             profile={profile}
@@ -203,9 +203,9 @@ export function App() {
         )}
       </main>
 
-      {/* Slim Footer Status Bar */}
-      <footer className="bg-white border-t border-emerald-100/80 py-1.5 sm:py-2 px-3 sm:px-6 shrink-0 mt-auto">
-        <div className="w-full max-w-6xl mx-auto flex items-center justify-between gap-2 text-[11px] font-semibold text-slate-500">
+      {/* Slim Footer Status Bar - Full 16:9 width */}
+      <footer className="bg-white border-t border-emerald-100/80 py-1.5 sm:py-2 px-3 sm:px-6 lg:px-8 2xl:px-12 shrink-0 mt-auto">
+        <div className="w-full flex items-center justify-between gap-2 text-[11px] font-semibold text-slate-500">
           <div className="flex items-center gap-1.5 truncate">
             <span>🌍</span>
             <span className="font-extrabold text-[#20352B]">HÀNH TINH XANH</span>

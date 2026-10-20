@@ -139,7 +139,7 @@ export const LeaderboardView: React.FC<LeaderboardViewProps> = ({
   };
 
   return (
-    <div className="w-full max-w-5xl mx-auto space-y-3 pb-6">
+    <div className="w-full space-y-3 pb-6">
       {/* 1. Compact Header Banner */}
       <div className="bg-white border border-emerald-100 rounded-2xl p-3 sm:p-4 shadow-2xs flex flex-wrap items-center justify-between gap-2.5">
         <div className="flex items-center gap-2.5">

@@ -83,7 +83,7 @@ export const ScienceSimulations: React.FC<ScienceSimulationsProps> = ({
   };
 
   return (
-    <div className="w-full max-w-5xl mx-auto space-y-3 pb-6">
+    <div className="w-full space-y-3 pb-6">
       {/* Simulation Selector Bar (Compact single row) */}
       <div className="grid grid-cols-3 gap-2">
         <button

@@ -146,7 +146,7 @@ export const InteractiveMindMap: React.FC = () => {
   };
 
   return (
-    <div className="w-full max-w-5xl mx-auto space-y-3 pb-6">
+    <div className="w-full space-y-3 pb-6">
       {/* 1. Control Header Bar (Compact single row) */}
       <div className="bg-white border border-emerald-100 rounded-2xl p-2.5 sm:p-3.5 shadow-2xs flex flex-wrap items-center justify-between gap-2.5">
         <div className="flex items-center gap-2">

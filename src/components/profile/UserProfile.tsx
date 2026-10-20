@@ -69,7 +69,7 @@ export const UserProfile: React.FC<UserProfileProps> = ({
   ];
 
   return (
-    <div className="w-full max-w-4xl mx-auto space-y-3 pb-6">
+    <div className="w-full space-y-3 pb-6">
       {/* Profile Card */}
       <div className="bg-white border border-emerald-100 rounded-2xl p-3.5 sm:p-5 shadow-2xs">
         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 pb-3 border-b border-slate-100">

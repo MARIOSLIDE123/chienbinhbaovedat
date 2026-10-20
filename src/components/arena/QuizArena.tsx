@@ -422,7 +422,7 @@ export const QuizArena: React.FC<QuizArenaProps> = ({
   }).length * 10;
 
   return (
-    <div className="w-full max-w-4xl mx-auto flex flex-col justify-between space-y-2.5 select-none">
+    <div className="w-full flex flex-col justify-between space-y-2.5 select-none">
       {/* 4.1 Top Bar: Progress, Timer, and Current Score */}
       <div className="bg-white border border-emerald-100 rounded-2xl p-2.5 sm:p-3 shadow-2xs flex items-center justify-between gap-3 shrink-0">
         {/* Question Counter + Progress */}

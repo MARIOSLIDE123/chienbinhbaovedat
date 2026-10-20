@@ -83,7 +83,7 @@ export const TextbookLessons: React.FC<TextbookLessonsProps> = ({
   ];
 
   return (
-    <div className="w-full max-w-5xl mx-auto space-y-3 pb-6">
+    <div className="w-full space-y-3 pb-6">
       {/* 1. Top 3 Topics Switcher (Compact horizontal tabs) */}
       <div className="grid grid-cols-3 gap-2">
         {LESSON_TOPICS.map((item, idx) => {

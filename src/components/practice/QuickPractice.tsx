@@ -221,7 +221,7 @@ export const QuickPractice: React.FC<QuickPracticeProps> = ({
   const isCurrentCorrect = correctFlags[currentIndex];
 
   return (
-    <div className="w-full max-w-4xl mx-auto space-y-2.5 pb-6">
+    <div className="w-full space-y-2.5 pb-6">
       {/* Header bar */}
       <div className="bg-white border border-emerald-100 rounded-2xl p-2.5 sm:p-3.5 shadow-2xs flex flex-wrap items-center justify-between gap-2.5">
         <div>
