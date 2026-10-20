@@ -83,67 +83,67 @@ export const ScienceSimulations: React.FC<ScienceSimulationsProps> = ({
   };
 
   return (
-    <div className="space-y-6 pb-12">
-      {/* Simulation Selector Bar */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
+    <div className="w-full max-w-5xl mx-auto space-y-3 pb-6">
+      {/* Simulation Selector Bar (Compact single row) */}
+      <div className="grid grid-cols-3 gap-2">
         <button
           type="button"
           onClick={() => setActiveSim('erosion')}
-          className={`p-4 rounded-2xl border-2 text-left transition-all flex items-center justify-between ${
+          className={`p-2 sm:p-2.5 rounded-xl border-2 text-left transition-all flex items-center justify-between gap-1 ${
             activeSim === 'erosion'
-              ? 'border-[#45B8F5] bg-blue-50/60 shadow-md scale-[1.01]'
+              ? 'border-[#45B8F5] bg-blue-50/70 shadow-2xs'
               : 'border-slate-200 bg-white hover:border-slate-300'
           }`}
         >
-          <div>
-            <span className="text-[11px] font-bold text-[#45B8F5] uppercase tracking-wider block mb-0.5">
+          <div className="min-w-0">
+            <span className="text-[10px] font-black text-[#45B8F5] uppercase tracking-wider block leading-tight">
               Thí nghiệm 1
             </span>
-            <h3 className="text-sm sm:text-base font-black text-[#20352B]">
-              Đất Có Cây vs Đất Trống
+            <h3 className="text-xs sm:text-sm font-black text-[#20352B] truncate">
+              Đất Cây vs Đất Trống
             </h3>
           </div>
-          <span className="text-2xl">🌧️</span>
+          <span className="text-xl shrink-0">🌧️</span>
         </button>
 
         <button
           type="button"
           onClick={() => setActiveSim('waste')}
-          className={`p-4 rounded-2xl border-2 text-left transition-all flex items-center justify-between ${
+          className={`p-2 sm:p-2.5 rounded-xl border-2 text-left transition-all flex items-center justify-between gap-1 ${
             activeSim === 'waste'
-              ? 'border-[#FF944D] bg-orange-50/60 shadow-md scale-[1.01]'
+              ? 'border-[#FF944D] bg-orange-50/70 shadow-2xs'
               : 'border-slate-200 bg-white hover:border-slate-300'
           }`}
         >
-          <div>
-            <span className="text-[11px] font-bold text-[#FF944D] uppercase tracking-wider block mb-0.5">
+          <div className="min-w-0">
+            <span className="text-[10px] font-black text-[#FF944D] uppercase tracking-wider block leading-tight">
               Thí nghiệm 2
             </span>
-            <h3 className="text-sm sm:text-base font-black text-[#20352B]">
-              Hành Trình Rác Thải
+            <h3 className="text-xs sm:text-sm font-black text-[#20352B] truncate">
+              Hành Trình Rác
             </h3>
           </div>
-          <span className="text-2xl">♻️</span>
+          <span className="text-xl shrink-0">♻️</span>
         </button>
 
         <button
           type="button"
           onClick={() => setActiveSim('water')}
-          className={`p-4 rounded-2xl border-2 text-left transition-all flex items-center justify-between ${
+          className={`p-2 sm:p-2.5 rounded-xl border-2 text-left transition-all flex items-center justify-between gap-1 ${
             activeSim === 'water'
-              ? 'border-[#22B573] bg-emerald-50/60 shadow-md scale-[1.01]'
+              ? 'border-[#22B573] bg-emerald-50/70 shadow-2xs'
               : 'border-slate-200 bg-white hover:border-slate-300'
           }`}
         >
-          <div>
-            <span className="text-[11px] font-bold text-[#22B573] uppercase tracking-wider block mb-0.5">
+          <div className="min-w-0">
+            <span className="text-[10px] font-black text-[#22B573] uppercase tracking-wider block leading-tight">
               Thí nghiệm 3
             </span>
-            <h3 className="text-sm sm:text-base font-black text-[#20352B]">
-              Trạm Xử Lý Nước Thải
+            <h3 className="text-xs sm:text-sm font-black text-[#20352B] truncate">
+              Xử Lý Nước Thải
             </h3>
           </div>
-          <span className="text-2xl">🧪</span>
+          <span className="text-xl shrink-0">🧪</span>
         </button>
       </div>
 
@@ -151,7 +151,7 @@ export const ScienceSimulations: React.FC<ScienceSimulationsProps> = ({
       {/* THÍ NGHIỆM 1: ĐẤT CÓ CÂY VÀ ĐẤT TRỐNG */}
       {/* ========================================================= */}
       {activeSim === 'erosion' && (
-        <div className="bg-white border border-blue-200 rounded-3xl p-6 sm:p-8 shadow-xs space-y-6">
+        <div className="bg-white border border-blue-200 rounded-2xl p-3.5 sm:p-5 shadow-2xs space-y-3.5">
           <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-100">
             <div>
               <div className="inline-flex items-center gap-2 text-xs font-bold px-2.5 py-1 bg-blue-50 text-blue-800 rounded-lg mb-1">

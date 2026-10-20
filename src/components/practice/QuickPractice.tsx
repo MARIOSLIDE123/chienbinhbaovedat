@@ -221,31 +221,31 @@ export const QuickPractice: React.FC<QuickPracticeProps> = ({
   const isCurrentCorrect = correctFlags[currentIndex];
 
   return (
-    <div className="space-y-6 pb-12">
+    <div className="w-full max-w-4xl mx-auto space-y-2.5 pb-6">
       {/* Header bar */}
-      <div className="bg-white border border-emerald-100 rounded-3xl p-4 sm:p-6 shadow-xs flex flex-wrap items-center justify-between gap-4">
+      <div className="bg-white border border-emerald-100 rounded-2xl p-2.5 sm:p-3.5 shadow-2xs flex flex-wrap items-center justify-between gap-2.5">
         <div>
-          <div className="inline-flex items-center gap-2 text-xs font-bold px-2.5 py-1 bg-amber-50 text-amber-800 rounded-lg mb-1">
+          <div className="inline-flex items-center gap-1.5 text-xs font-bold px-2 py-0.5 bg-amber-50 text-amber-800 rounded-lg mb-0.5">
             <Sparkles className="w-3.5 h-3.5 text-amber-600" />
-            <span>Thử tài nhanh trí · Câu {currentIndex + 1}/{PRACTICE_ACTIVITIES.length}</span>
+            <span>Thử tài nhanh trí · Thử thách {currentIndex + 1}/{PRACTICE_ACTIVITIES.length}</span>
           </div>
-          <h2 className="text-xl sm:text-2xl font-black text-[#20352B]">
+          <h2 className="text-base sm:text-lg font-black text-[#20352B]">
             {currentItem.title}
           </h2>
-          <p className="text-xs sm:text-sm text-slate-600 font-medium">
+          <p className="text-xs text-slate-500 font-medium">
             {currentItem.instruction}
           </p>
         </div>
 
         {/* Progress pills */}
-        <div className="flex items-center gap-1.5">
+        <div className="flex items-center gap-1">
           {PRACTICE_ACTIVITIES.map((_, idx) => {
             const hasAnswered = idx in correctFlags;
             const ok = correctFlags[idx];
             return (
               <div
                 key={idx}
-                className={`w-3 h-3 rounded-full transition-all ${
+                className={`w-2.5 h-2.5 rounded-full transition-all ${
                   idx === currentIndex
                     ? 'ring-2 ring-emerald-500 scale-125 bg-emerald-400'
                     : hasAnswered
@@ -261,7 +261,7 @@ export const QuickPractice: React.FC<QuickPracticeProps> = ({
       </div>
 
       {/* Interactive Card based on type */}
-      <div className="bg-white border border-emerald-100 rounded-3xl p-6 sm:p-8 shadow-xs space-y-6">
+      <div className="bg-white border border-emerald-100 rounded-2xl p-3.5 sm:p-5 shadow-2xs space-y-3">
         {/* TYPE 1: Single choice */}
         {currentItem.type === 'single-choice' && (
           <div className="space-y-3">

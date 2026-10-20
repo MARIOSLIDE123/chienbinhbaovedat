@@ -2,11 +2,22 @@
 
 :root {
   /* Responsive fluid base typography:
-     - Automatically co-giãn mượt mà theo kích thước màn hình
-     - Tối ưu diện tích chuẩn 16:9 cho máy tính, màn hình tương tác, tivi lớp học
-     - Tăng nhẹ cỡ chữ để học sinh dễ đọc, không mỏi mắt
+     - Compact, readable, perfectly proportioned for 1-screen views
+     - Scales smoothly from 14px on small mobile up to 17px on large desktop
   */
-  font-size: clamp(16px, 0.42rem + 0.88vw, 21.5px);
+  font-size: clamp(14px, 0.35rem + 0.65vw, 17px);
+}
+
+html, body {
+  overflow-x: hidden;
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  width: 100%;
+}
+
+*, *::before, *::after {
+  box-sizing: border-box;
 }
 
 @layer utilities {

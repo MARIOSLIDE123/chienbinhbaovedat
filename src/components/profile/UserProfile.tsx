@@ -69,12 +69,12 @@ export const UserProfile: React.FC<UserProfileProps> = ({
   ];
 
   return (
-    <div className="space-y-6 pb-12">
+    <div className="w-full max-w-4xl mx-auto space-y-3 pb-6">
       {/* Profile Card */}
-      <div className="bg-white border border-emerald-100 rounded-3xl p-6 sm:p-8 shadow-xs">
-        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6 pb-6 border-b border-slate-100">
-          <div className="flex items-center gap-4">
-            <div className="w-16 h-16 sm:w-20 sm:h-20 rounded-3xl bg-gradient-to-tr from-[#22B573] to-[#45B8F5] p-1 flex items-center justify-center text-4xl sm:text-5xl shadow-md">
+      <div className="bg-white border border-emerald-100 rounded-2xl p-3.5 sm:p-5 shadow-2xs">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 pb-3 border-b border-slate-100">
+          <div className="flex items-center gap-3">
+            <div className="w-12 h-12 sm:w-14 sm:h-14 rounded-2xl bg-gradient-to-tr from-[#22B573] to-[#45B8F5] p-0.5 flex items-center justify-center text-3xl shadow-xs shrink-0">
               <span>
                 {profile.avatarId === 'water'
                   ? '💧'
@@ -89,14 +89,14 @@ export const UserProfile: React.FC<UserProfileProps> = ({
             </div>
             <div>
               <div className="flex items-center gap-2">
-                <h2 className="text-2xl sm:text-3xl font-black text-[#20352B]">
+                <h2 className="text-base sm:text-xl font-black text-[#20352B]">
                   {profile.fullName}
                 </h2>
-                <span className="px-2.5 py-0.5 bg-emerald-100 text-emerald-800 text-xs font-bold rounded-md">
+                <span className="px-2 py-0.5 bg-emerald-100 text-emerald-800 text-[10px] font-black rounded-md">
                   Chiến binh nhí
                 </span>
               </div>
-              <p className="text-xs sm:text-sm text-slate-500 font-semibold mt-1 flex flex-wrap items-center gap-2">
+              <p className="text-xs text-slate-500 font-semibold mt-0.5 flex flex-wrap items-center gap-1.5">
                 <span>Lớp {profile.className}</span>
                 <span>•</span>
                 <span>{profile.schoolName}</span>
@@ -110,18 +110,18 @@ export const UserProfile: React.FC<UserProfileProps> = ({
             </div>
           </div>
 
-          <div className="flex items-center gap-2 self-stretch sm:self-auto">
+          <div className="flex items-center gap-2 self-stretch sm:self-auto shrink-0">
             <button
               type="button"
               onClick={onEditProfile}
-              className="flex-1 sm:flex-initial px-4 py-2 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs rounded-xl transition-colors"
+              className="flex-1 sm:flex-initial px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold text-xs rounded-xl transition-colors"
             >
               Đổi thông tin
             </button>
             <button
               type="button"
               onClick={onLogout}
-              className="px-3 py-2 bg-rose-50 hover:bg-rose-100 text-rose-700 font-bold text-xs rounded-xl flex items-center gap-1.5 transition-colors"
+              className="px-2.5 py-1.5 bg-rose-50 hover:bg-rose-100 text-rose-700 font-bold text-xs rounded-xl flex items-center gap-1 transition-colors"
               title="Đăng xuất khỏi thiết bị này"
             >
               <LogOut className="w-3.5 h-3.5" />
@@ -131,64 +131,66 @@ export const UserProfile: React.FC<UserProfileProps> = ({
         </div>
 
         {/* Stats Grid */}
-        <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-6">
-          <div className="p-4 bg-emerald-50 border border-emerald-200 rounded-2xl text-center">
-            <span className="text-2xl font-black text-emerald-700 block">
+        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 pt-3">
+          <div className="p-2.5 bg-emerald-50 border border-emerald-200 rounded-xl text-center">
+            <span className="text-lg sm:text-xl font-black text-emerald-700 block">
               {progress.highestScore}
-              <span className="text-xs font-normal text-slate-400">/200</span>
+              <span className="text-[10px] font-normal text-slate-500">/200</span>
             </span>
-            <span className="text-xs font-bold text-slate-600">Điểm thi cao nhất</span>
+            <span className="text-[10px] font-bold text-slate-600">Điểm cao nhất</span>
           </div>
 
-          <div className="p-4 bg-blue-50 border border-blue-200 rounded-2xl text-center">
-            <span className="text-2xl font-black text-blue-700 block">
+          <div className="p-2.5 bg-blue-50 border border-blue-200 rounded-xl text-center">
+            <span className="text-lg sm:text-xl font-black text-blue-700 block">
               {progress.arenaAttempts}
             </span>
-            <span className="text-xs font-bold text-slate-600">Số lượt thi đấu</span>
+            <span className="text-[10px] font-bold text-slate-600">Lượt thi đấu</span>
           </div>
 
-          <div className="p-4 bg-amber-50 border border-amber-200 rounded-2xl text-center">
-            <span className="text-2xl font-black text-amber-700 block">
+          <div className="p-2.5 bg-amber-50 border border-amber-200 rounded-xl text-center">
+            <span className="text-lg sm:text-xl font-black text-amber-700 block">
               {progress.completedLessons.length}/3
             </span>
-            <span className="text-xs font-bold text-slate-600">Chủ đề đã học</span>
+            <span className="text-[10px] font-bold text-slate-600">Chủ đề đã học</span>
           </div>
 
-          <div className="p-4 bg-purple-50 border border-purple-200 rounded-2xl text-center">
-            <span className="text-2xl font-black text-purple-700 block">
+          <div className="p-2.5 bg-purple-50 border border-purple-200 rounded-xl text-center">
+            <span className="text-lg sm:text-xl font-black text-purple-700 block">
               {allBadges.filter((b) => b.unlocked).length}/{allBadges.length}
             </span>
-            <span className="text-xs font-bold text-slate-600">Huy hiệu đã nhận</span>
+            <span className="text-[10px] font-bold text-slate-600">Huy hiệu đạt được</span>
           </div>
         </div>
       </div>
 
       {/* Badges Collection */}
-      <div className="bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 shadow-xs space-y-4">
-        <div className="flex items-center gap-2">
-          <Award className="w-5 h-5 text-amber-500" />
-          <h3 className="text-lg font-black text-[#20352B]">
+      <div className="bg-white border border-slate-200 rounded-2xl p-3.5 sm:p-5 shadow-2xs space-y-2.5">
+        <div className="flex items-center gap-1.5">
+          <Award className="w-4 h-4 text-amber-500" />
+          <h3 className="text-xs sm:text-sm font-black text-[#20352B]">
             Bộ Sưu Tập Huy Hiệu Danh Dự
           </h3>
         </div>
 
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
+        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
           {allBadges.map((b) => (
             <div
               key={b.id}
-              className={`p-4 rounded-2xl border-2 flex items-start gap-3 transition-all ${
+              className={`p-2.5 rounded-xl border flex items-center gap-2.5 transition-all ${
                 b.unlocked
                   ? 'border-amber-200 bg-amber-50/50 shadow-2xs'
-                  : 'border-slate-200 bg-slate-50/60 opacity-50 grayscale'
+                  : 'border-slate-200 bg-slate-50/60 opacity-40 grayscale'
               }`}
             >
-              <span className="text-3xl">{b.icon}</span>
-              <div>
-                <h4 className="font-extrabold text-sm text-slate-900">{b.name}</h4>
-                <p className="text-xs text-slate-500 font-medium mt-0.5">{b.desc}</p>
-                <span className="text-[10px] font-black uppercase mt-1 inline-block text-amber-700">
-                  {b.unlocked ? '✓ Đã nhận' : '🔒 Chưa mở khóa'}
-                </span>
+              <span className="text-2xl shrink-0">{b.icon}</span>
+              <div className="min-w-0">
+                <div className="flex items-center gap-1.5">
+                  <h4 className="font-extrabold text-xs text-slate-900 truncate">{b.name}</h4>
+                  <span className="text-[9px] font-black uppercase text-amber-700">
+                    {b.unlocked ? '✓' : '🔒'}
+                  </span>
+                </div>
+                <p className="text-[10px] text-slate-500 font-medium truncate">{b.desc}</p>
               </div>
             </div>
           ))}
@@ -196,63 +198,59 @@ export const UserProfile: React.FC<UserProfileProps> = ({
       </div>
 
       {/* Learning Journey Checklist */}
-      <div className="bg-white border border-slate-200 rounded-3xl p-6 sm:p-8 shadow-xs space-y-4">
-        <h3 className="text-lg font-black text-[#20352B] flex items-center gap-2">
+      <div className="bg-white border border-slate-200 rounded-2xl p-3.5 sm:p-5 shadow-2xs space-y-2.5">
+        <h3 className="text-xs sm:text-sm font-black text-[#20352B] flex items-center gap-1.5">
           <span>🗺️</span>
-          <span>Hành Trình Bảo Vệ Đất</span>
+          <span>Tiến Độ Hành Trình</span>
         </h3>
 
-        <div className="space-y-3">
+        <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
           {/* Lessons */}
-          <div className="p-4 bg-slate-50 border border-slate-200 rounded-2xl flex items-center justify-between gap-3">
-            <div className="flex items-center gap-3">
-              <div className="w-9 h-9 rounded-xl bg-emerald-100 text-emerald-700 flex items-center justify-center font-bold">
-                <BookOpen className="w-5 h-5" />
+          <div className="p-2.5 bg-slate-50 border border-slate-200 rounded-xl flex items-center justify-between gap-2">
+            <div className="flex items-center gap-2 min-w-0">
+              <div className="w-7 h-7 rounded-lg bg-emerald-100 text-emerald-700 flex items-center justify-center font-bold shrink-0">
+                <BookOpen className="w-4 h-4" />
               </div>
-              <div>
-                <h4 className="font-bold text-sm text-slate-900">3 Chủ đề SGK Lớp 5</h4>
-                <p className="text-xs text-slate-500">
-                  Ô nhiễm đất, xói mòn và biện pháp phòng chống
-                </p>
+              <div className="min-w-0">
+                <h4 className="font-bold text-xs text-slate-900 truncate">3 Chủ đề SGK</h4>
+                <p className="text-[10px] text-slate-500 truncate">{progress.completedLessons.length}/3 bài</p>
               </div>
             </div>
             {progress.completedLessons.length >= 3 ? (
-              <span className="text-xs font-bold text-emerald-700 bg-emerald-100 px-3 py-1 rounded-full">
-                ✓ Hoàn thành
+              <span className="text-[10px] font-bold text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded shrink-0">
+                ✓ Xong
               </span>
             ) : (
               <button
                 type="button"
                 onClick={() => onSelectTab('lessons')}
-                className="px-3 py-1.5 bg-[#22B573] text-white text-xs font-bold rounded-xl"
+                className="px-2 py-0.5 bg-[#22B573] text-white text-[10px] font-bold rounded shrink-0"
               >
-                Học tiếp
+                Học
               </button>
             )}
           </div>
 
           {/* Simulations */}
-          <div className="p-4 bg-slate-50 border border-slate-200 rounded-2xl flex items-center justify-between gap-3">
-            <div className="flex items-center gap-3">
-              <div className="w-9 h-9 rounded-xl bg-blue-100 text-blue-700 flex items-center justify-center font-bold">
-                <FlaskConical className="w-5 h-5" />
+          <div className="p-2.5 bg-slate-50 border border-slate-200 rounded-xl flex items-center justify-between gap-2">
+            <div className="flex items-center gap-2 min-w-0">
+              <div className="w-7 h-7 rounded-lg bg-blue-100 text-blue-700 flex items-center justify-center font-bold shrink-0">
+                <FlaskConical className="w-4 h-4" />
               </div>
-              <div>
-                <h4 className="font-bold text-sm text-slate-900">3 Thí nghiệm trực quan</h4>
-                <p className="text-xs text-slate-500">
-                  Mưa xói mòn đất, hành trình rác thải, trạm nước thải
-                </p>
+              <div className="min-w-0">
+                <h4 className="font-bold text-xs text-slate-900 truncate">3 Thí nghiệm</h4>
+                <p className="text-[10px] text-slate-500 truncate">{progress.completedSimulations.length}/3 bài</p>
               </div>
             </div>
             {progress.completedSimulations.length >= 3 ? (
-              <span className="text-xs font-bold text-emerald-700 bg-emerald-100 px-3 py-1 rounded-full">
-                ✓ Hoàn thành
+              <span className="text-[10px] font-bold text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded shrink-0">
+                ✓ Xong
               </span>
             ) : (
               <button
                 type="button"
                 onClick={() => onSelectTab('simulations')}
-                className="px-3 py-1.5 bg-[#45B8F5] text-white text-xs font-bold rounded-xl"
+                className="px-2 py-0.5 bg-[#45B8F5] text-white text-[10px] font-bold rounded shrink-0"
               >
                 Khám phá
               </button>
@@ -260,27 +258,25 @@ export const UserProfile: React.FC<UserProfileProps> = ({
           </div>
 
           {/* Arena */}
-          <div className="p-4 bg-slate-50 border border-slate-200 rounded-2xl flex items-center justify-between gap-3">
-            <div className="flex items-center gap-3">
-              <div className="w-9 h-9 rounded-xl bg-rose-100 text-rose-700 flex items-center justify-center font-bold">
-                <Trophy className="w-5 h-5" />
+          <div className="p-2.5 bg-slate-50 border border-slate-200 rounded-xl flex items-center justify-between gap-2">
+            <div className="flex items-center gap-2 min-w-0">
+              <div className="w-7 h-7 rounded-lg bg-rose-100 text-rose-700 flex items-center justify-center font-bold shrink-0">
+                <Trophy className="w-4 h-4" />
               </div>
-              <div>
-                <h4 className="font-bold text-sm text-slate-900">Đấu trường trí tuệ</h4>
-                <p className="text-xs text-slate-500">
-                  20 câu hỏi tính điểm tối đa 200 điểm
-                </p>
+              <div className="min-w-0">
+                <h4 className="font-bold text-xs text-slate-900 truncate">Đấu trường trí tuệ</h4>
+                <p className="text-[10px] text-slate-500 truncate">{progress.highestScore}đ</p>
               </div>
             </div>
             {progress.arenaAttempts > 0 ? (
-              <span className="text-xs font-bold text-emerald-700 bg-emerald-100 px-3 py-1 rounded-full">
-                Đã thi ({progress.highestScore}đ)
+              <span className="text-[10px] font-bold text-emerald-700 bg-emerald-100 px-2 py-0.5 rounded shrink-0">
+                {progress.highestScore}đ
               </span>
             ) : (
               <button
                 type="button"
                 onClick={() => onSelectTab('arena')}
-                className="px-3 py-1.5 bg-rose-500 text-white text-xs font-bold rounded-xl"
+                className="px-2 py-0.5 bg-rose-500 text-white text-10px font-bold rounded shrink-0"
               >
                 Thi ngay
               </button>

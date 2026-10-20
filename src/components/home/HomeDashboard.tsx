@@ -1,6 +1,5 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { StudentProfile, UserLearningProgress } from '../../types';
-import { CaptainEarth } from '../mascot/CaptainEarth';
 import { DAILY_ACTIONS_CHECKLIST } from '../../data/learningContent';
 import {
   BookOpen,
@@ -13,6 +12,8 @@ import {
   ArrowRight,
   ShieldCheck,
   Sparkles,
+  ChevronDown,
+  ChevronUp,
 } from 'lucide-react';
 
 interface HomeDashboardProps {
@@ -28,8 +29,9 @@ export const HomeDashboard: React.FC<HomeDashboardProps> = ({
   onSelectTab,
   onToggleAction,
 }) => {
+  const [showChecklist, setShowChecklist] = useState<boolean>(false);
+
   // Calculate completion percentage:
-  // 3 lessons (30%), 3 simulations (30%), practice (20%), arena attempt (20%)
   const lessonPct = (progress.completedLessons.length / 3) * 30;
   const simPct = (progress.completedSimulations.length / 3) * 30;
   const practicePct = (Math.min(progress.practiceCompleted, 8) / 8) * 20;
@@ -39,235 +41,246 @@ export const HomeDashboard: React.FC<HomeDashboardProps> = ({
   const featureCards = [
     {
       id: 'lessons',
-      title: 'KHÁM PHÁ KIẾN THỨC',
-      description: 'Học 3 chủ đề trọng tâm SGK: Ô nhiễm đất, Xói mòn đất và Biện pháp bảo vệ.',
+      number: '1',
+      title: 'Khám Phá Kiến Thức',
+      subtitle: 'Ô nhiễm · Xói mòn · Bảo vệ đất',
       icon: BookOpen,
-      color: 'bg-emerald-500',
-      badge: `${progress.completedLessons.length}/3 chủ đề`,
-      buttonText: 'Vào bài học ngay',
+      iconColor: 'bg-emerald-500 text-white',
+      badge: `${progress.completedLessons.length}/3 bài`,
+      badgeStyle: 'bg-emerald-50 text-emerald-800 border-emerald-200',
+      actionText: 'Vào học ngay',
     },
     {
       id: 'mindmap',
-      title: 'SƠ ĐỒ TƯ DUY',
-      description: 'Sơ đồ hình cây trực quan 3 nhánh lớn, mở rộng chi tiết và ôn tập nhanh chóng.',
+      number: '2',
+      title: 'Sơ Đồ Tư Duy',
+      subtitle: '3 nhánh tri thức trực quan',
       icon: GitFork,
-      color: 'bg-blue-500',
-      badge: 'Sơ đồ tương tác',
-      buttonText: 'Khám phá sơ đồ',
+      iconColor: 'bg-sky-500 text-white',
+      badge: 'Sơ đồ hình cây',
+      badgeStyle: 'bg-sky-50 text-sky-800 border-sky-200',
+      actionText: 'Xem sơ đồ',
     },
     {
       id: 'practice',
-      title: 'THỬ TÀI NHANH TRÍ',
-      description: '8 trò chơi luyện tập: Phân loại rác, ghép cặp tác hại, thử thách đúng/sai.',
+      number: '3',
+      title: 'Thử Tài Nhanh Trí',
+      subtitle: '8 trò chơi luyện tập tương tác',
       icon: Lightbulb,
-      color: 'bg-amber-500',
+      iconColor: 'bg-amber-500 text-white',
       badge: `${progress.practiceCompleted}/8 thử thách`,
-      buttonText: 'Luyện tập ngay',
+      badgeStyle: 'bg-amber-50 text-amber-800 border-amber-200',
+      actionText: 'Luyện tập',
     },
     {
       id: 'simulations',
-      title: 'THÍ NGHIỆM VUI',
-      description: 'Mô phỏng mưa làm xói mòn đất, hành trình rác thải và xử lý nước thải.',
+      number: '4',
+      title: 'Thí Nghiệm Vui',
+      subtitle: 'Mô phỏng mưa & xử lý rác',
       icon: FlaskConical,
-      color: 'bg-purple-500',
+      iconColor: 'bg-purple-500 text-white',
       badge: `${progress.completedSimulations.length}/3 thí nghiệm`,
-      buttonText: 'Vào phòng lab',
+      badgeStyle: 'bg-purple-50 text-purple-800 border-purple-200',
+      actionText: 'Vào phòng lab',
     },
     {
       id: 'arena',
-      title: 'ĐẤU TRƯỜNG TRÍ TUỆ',
-      description: 'Thử thách 20 câu hỏi tính giờ 10 phút, đạt tối đa 200 điểm và rinh huy hiệu vàng!',
+      number: '5',
+      title: 'Đấu Trường Trí Tuệ',
+      subtitle: '20 câu hỏi tính giờ 10 phút',
       icon: Trophy,
-      color: 'bg-rose-500',
-      badge: progress.highestScore > 0 ? `Điểm cao: ${progress.highestScore}/200` : '20 câu · 200 điểm',
-      buttonText: 'Tham gia thi ngay',
+      iconColor: 'bg-rose-500 text-white',
+      badge: progress.highestScore > 0 ? `Điểm: ${progress.highestScore}/200` : '200 điểm tối đa',
+      badgeStyle: 'bg-rose-50 text-rose-800 border-rose-200',
+      actionText: 'Tham gia thi ngay',
       highlight: true,
     },
     {
       id: 'leaderboard',
-      title: 'BẢNG XẾP HẠNG TOÀN QUỐC',
-      description: 'Vinh danh các chiến binh nhí điểm cao nhất trên cả nước kết nối Google Sheets.',
+      number: '6',
+      title: 'Bảng Xếp Hạng',
+      subtitle: 'Vinh danh Bảng Vàng toàn quốc',
       icon: Award,
-      color: 'bg-indigo-500',
-      badge: 'Trực tuyến toàn quốc',
-      buttonText: 'Xem bảng vàng',
+      iconColor: 'bg-indigo-500 text-white',
+      badge: 'Trực tuyến',
+      badgeStyle: 'bg-indigo-50 text-indigo-800 border-indigo-200',
+      actionText: 'Xem bảng vàng',
     },
   ];
 
+  const completedActionsCount = progress.checklistActions?.length || 0;
+
   return (
-    <div className="space-y-8 pb-12">
-      {/* Hero Welcome Banner */}
-      <section className="bg-gradient-to-br from-[#FFF9EA] via-[#F0FDF4] to-[#E0F2FE] border-2 border-[#22B573]/20 rounded-3xl p-6 sm:p-8 shadow-xs">
-        <div className="flex flex-col lg:flex-row items-center justify-between gap-6">
-          <div className="space-y-3 text-center lg:text-left flex-1">
-            <div className="inline-flex items-center gap-2 px-3 py-1 bg-white/80 border border-emerald-200 rounded-full text-xs font-bold text-emerald-800 shadow-2xs">
-              <Sparkles className="w-4 h-4 text-amber-500" />
-              <span>Bài 2: Ô nhiễm, xói mòn và bảo vệ môi trường đất</span>
+    <div className="space-y-3 sm:space-y-4 pb-4">
+      {/* 1. Compact Hero Header (Fits tightly at top without wasting vertical space) */}
+      <section className="bg-gradient-to-r from-[#FFF9EA] via-[#F0FDF4] to-[#E0F2FE] border border-[#22B573]/30 rounded-2xl p-3 sm:p-4 shadow-2xs">
+        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3">
+          {/* Student Welcome info */}
+          <div className="flex items-center gap-3">
+            <div className="w-10 h-10 sm:w-11 sm:h-11 rounded-2xl bg-gradient-to-tr from-[#22B573] to-[#45B8F5] p-0.5 flex items-center justify-center shrink-0 shadow-xs">
+              <span className="text-xl sm:text-2xl leading-none">
+                {profile.avatarId === 'water' ? '💧' : profile.avatarId === 'sprout' ? '🌱' : profile.avatarId === 'worm' ? '🪱' : profile.avatarId === 'leaf' ? '🍃' : '🌍'}
+              </span>
             </div>
-            <h1 className="text-2xl sm:text-3xl lg:text-4xl font-black text-[#20352B] tracking-tight">
-              Chào chiến binh <span className="text-[#22B573]">{profile.fullName}</span>!
-            </h1>
-            <p className="text-base sm:text-lg text-slate-700 font-medium max-w-2xl leading-relaxed">
-              Hôm nay chúng ta cùng học cách bảo vệ đất nhé! Hãy khám phá bài học, tham gia thí nghiệm vui và chinh phục 20 câu hỏi Đấu Trường Trí Tuệ!
-            </p>
-
-            {/* School and Class tags */}
-            <div className="flex flex-wrap items-center justify-center lg:justify-start gap-2 text-xs font-bold text-slate-600 pt-1">
-              <span className="px-3 py-1 bg-white rounded-lg border border-slate-200 shadow-2xs">
-                🏫 {profile.schoolName}
-              </span>
-              <span className="px-3 py-1 bg-white rounded-lg border border-slate-200 shadow-2xs">
-                🏷️ Lớp {profile.className}
-              </span>
-              {profile.province && (
-                <span className="px-3 py-1 bg-white rounded-lg border border-slate-200 shadow-2xs">
-                  📍 {profile.province}
+            <div>
+              <div className="flex items-center gap-2">
+                <h1 className="text-sm sm:text-base font-black text-[#20352B]">
+                  Chào chiến binh <span className="text-[#22B573]">{profile.fullName}</span>!
+                </h1>
+                <span className="hidden md:inline-flex items-center gap-1 px-2 py-0.5 bg-white/80 border border-emerald-200 rounded-full text-[10px] font-extrabold text-emerald-800">
+                  <Sparkles className="w-3 h-3 text-amber-500" />
+                  Khoa học 5 · Bài 2
                 </span>
-              )}
+              </div>
+              <p className="text-xs text-slate-600 font-semibold mt-0.5">
+                Lớp {profile.className} · {profile.schoolName} {profile.province ? `(${profile.province})` : ''}
+              </p>
             </div>
           </div>
 
-          {/* Captain Earth Mascot with Cheer */}
-          <div className="shrink-0">
-            <CaptainEarth
-              mood="cheer"
-              message={`Sẵn sàng chưa ${profile.fullName.split(' ').slice(-1)[0]} ơi? Chúng mình cùng giải cứu đất mẹ nào!`}
-              size="lg"
-            />
-          </div>
-        </div>
-
-        {/* Overall Progress Bar */}
-        <div className="mt-6 pt-6 border-t border-emerald-200/60">
-          <div className="flex items-center justify-between text-xs sm:text-sm font-bold mb-2">
-            <span className="text-slate-700">Tiến độ bài học của em:</span>
-            <span className="text-[#22B573] font-black">{totalPct}% Hoàn thành</span>
-          </div>
-          <div className="w-full h-3.5 bg-white rounded-full overflow-hidden border border-emerald-200 shadow-inner">
-            <div
-              className="h-full bg-gradient-to-r from-[#22B573] via-[#45B8F5] to-[#FFD447] transition-all duration-500 rounded-full"
-              style={{ width: `${Math.max(totalPct, 5)}%` }}
-            />
+          {/* Quick Progress Bar (Compact inline) */}
+          <div className="w-full sm:w-72 bg-white/90 border border-emerald-200/80 rounded-xl p-2 shrink-0">
+            <div className="flex items-center justify-between text-[11px] font-bold mb-1">
+              <span className="text-slate-700">Tiến độ bài học:</span>
+              <span className="text-[#22B573] font-black">{totalPct}%</span>
+            </div>
+            <div className="w-full h-2 bg-slate-100 rounded-full overflow-hidden">
+              <div
+                className="h-full bg-gradient-to-r from-[#22B573] via-[#45B8F5] to-[#FFD447] transition-all duration-500 rounded-full"
+                style={{ width: `${Math.max(totalPct, 5)}%` }}
+              />
+            </div>
           </div>
         </div>
       </section>
 
-      {/* 6 Large Feature Cards */}
+      {/* 2. Sáu Chức Năng Chính (6 Core Feature Cards in 1 Screen) */}
       <section>
-        <div className="flex items-center justify-between mb-4">
-          <h2 className="text-xl sm:text-2xl font-black text-[#20352B]">
-            6 Khu Vực Khám Phá
-          </h2>
-          <span className="text-xs font-bold text-slate-500">
-            Chọn một khu vực để bắt đầu
-          </span>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-5">
+        <div className="grid grid-cols-2 md:grid-cols-3 gap-2.5 sm:gap-3.5">
           {featureCards.map((card) => {
             const IconComponent = card.icon;
             return (
               <div
                 key={card.id}
-                className={`relative flex flex-col justify-between bg-white border rounded-3xl p-6 transition-all duration-200 hover:-translate-y-1 hover:shadow-lg ${
+                onClick={() => onSelectTab(card.id)}
+                className={`group relative flex flex-col justify-between bg-white border rounded-2xl p-3 sm:p-4 cursor-pointer transition-all duration-150 hover:-translate-y-0.5 hover:shadow-md ${
                   card.highlight
-                    ? 'border-rose-300 ring-2 ring-rose-100 shadow-md'
-                    : 'border-slate-200 shadow-2xs'
+                    ? 'border-rose-300 ring-2 ring-rose-100 bg-gradient-to-b from-white to-rose-50/20'
+                    : 'border-slate-200 hover:border-emerald-300'
                 }`}
               >
                 <div>
-                  <div className="flex items-center justify-between mb-4">
+                  {/* Top card bar: icon + badge */}
+                  <div className="flex items-center justify-between mb-2">
                     <div
-                      className={`w-12 h-12 rounded-2xl ${card.color} text-white flex items-center justify-center shadow-md`}
+                      className={`w-9 h-9 sm:w-10 sm:h-10 rounded-xl ${card.iconColor} flex items-center justify-center shadow-xs transition-transform group-hover:scale-105`}
                     >
-                      <IconComponent className="w-6 h-6" />
+                      <IconComponent className="w-5 h-5" />
                     </div>
-                    <span className="text-xs font-bold px-2.5 py-1 bg-slate-100 text-slate-700 rounded-lg">
+                    <span
+                      className={`text-[10px] sm:text-xs font-black px-2 py-0.5 rounded-md border ${card.badgeStyle}`}
+                    >
                       {card.badge}
                     </span>
                   </div>
 
-                  <h3 className="text-lg font-black text-[#20352B] mb-2 leading-snug">
+                  {/* Title & short subtitle */}
+                  <h3 className="text-sm sm:text-base font-black text-[#20352B] group-hover:text-[#22B573] transition-colors leading-snug">
                     {card.title}
                   </h3>
-                  <p className="text-sm text-slate-600 leading-relaxed font-medium mb-6">
-                    {card.description}
+                  <p className="text-[11px] sm:text-xs text-slate-500 font-medium line-clamp-1 mt-0.5">
+                    {card.subtitle}
                   </p>
                 </div>
 
-                <button
-                  type="button"
-                  onClick={() => onSelectTab(card.id)}
-                  className={`w-full py-3 px-4 rounded-xl font-extrabold text-sm flex items-center justify-center gap-2 transition-all ${
-                    card.highlight
-                      ? 'bg-rose-500 hover:bg-rose-600 text-white shadow-md shadow-rose-500/20'
-                      : 'bg-[#FFF9EA] hover:bg-[#22B573] hover:text-white text-[#20352B] border border-amber-200 hover:border-[#22B573]'
-                  }`}
-                >
-                  <span>{card.buttonText}</span>
-                  <ArrowRight className="w-4 h-4" />
-                </button>
+                {/* Bottom Action strip */}
+                <div className="mt-3 pt-2 border-t border-slate-100 flex items-center justify-between">
+                  <span
+                    className={`text-xs font-extrabold flex items-center gap-1 transition-colors ${
+                      card.highlight ? 'text-rose-600' : 'text-[#22B573]'
+                    }`}
+                  >
+                    <span>{card.actionText}</span>
+                    <ArrowRight className="w-3.5 h-3.5 transition-transform group-hover:translate-x-1" />
+                  </span>
+                  <span className="text-[10px] font-black text-slate-300 group-hover:text-slate-400">
+                    #{card.number}
+                  </span>
+                </div>
               </div>
             );
           })}
         </div>
       </section>
 
-      {/* "Em có thể làm gì hôm nay?" Daily Action Checklist */}
-      <section className="bg-white border border-emerald-100 rounded-3xl p-6 sm:p-8 shadow-xs">
-        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 mb-6">
-          <div>
-            <div className="flex items-center gap-2">
-              <ShieldCheck className="w-6 h-6 text-[#22B573]" />
-              <h3 className="text-xl font-black text-[#20352B]">
-                Em Có Thể Làm Gì Hôm Nay?
-              </h3>
+      {/* 3. Collapsible Action Ribbon: "Em có thể làm gì hôm nay?" (Preserves full actions without pushing screen) */}
+      <section className="bg-white border border-emerald-100 rounded-2xl overflow-hidden shadow-2xs">
+        <button
+          type="button"
+          onClick={() => setShowChecklist((prev) => !prev)}
+          className="w-full p-2.5 sm:p-3 bg-gradient-to-r from-emerald-50/60 to-white hover:bg-emerald-50 flex items-center justify-between gap-3 text-left transition-colors"
+        >
+          <div className="flex items-center gap-2">
+            <ShieldCheck className="w-5 h-5 text-[#22B573] shrink-0" />
+            <div>
+              <span className="text-xs sm:text-sm font-black text-[#20352B]">
+                Việc làm của chiến binh nhí hôm nay
+              </span>
+              <span className="text-[11px] text-slate-500 ml-2 hidden sm:inline font-medium">
+                (Tích lũy điểm kinh nghiệm khi bảo vệ môi trường đất)
+              </span>
             </div>
-            <p className="text-xs sm:text-sm text-slate-600 font-medium mt-1">
-              Mỗi hành động nhỏ của em đều góp phần bảo vệ đất mẹ thêm màu mỡ và trong lành!
-            </p>
           </div>
-          <div className="px-3 py-1.5 bg-emerald-50 text-emerald-800 rounded-xl text-xs font-bold">
-            Hoàn thành: {progress.checklistActions?.length || 0}/{DAILY_ACTIONS_CHECKLIST.length} việc làm
-          </div>
-        </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
-          {DAILY_ACTIONS_CHECKLIST.map((action) => {
-            const isChecked = progress.checklistActions?.includes(action.id);
-            return (
-              <div
-                key={action.id}
-                onClick={() => onToggleAction(action.id)}
-                className={`p-3.5 rounded-2xl border-2 cursor-pointer transition-all flex items-center justify-between gap-3 ${
-                  isChecked
-                    ? 'border-[#22B573] bg-emerald-50/80 shadow-2xs'
-                    : 'border-slate-200 bg-[#FFFDF7] hover:border-slate-300'
-                }`}
-              >
-                <div className="flex items-center gap-3">
-                  <div
-                    className={`w-6 h-6 rounded-lg flex items-center justify-center shrink-0 ${
-                      isChecked ? 'bg-[#22B573] text-white' : 'border-2 border-slate-300 bg-white'
-                    }`}
-                  >
-                    {isChecked && <CheckCircle2 className="w-4 h-4" />}
+          <div className="flex items-center gap-2 shrink-0">
+            <span className="px-2 py-0.5 bg-emerald-100 text-emerald-800 rounded-md text-[11px] font-black">
+              {completedActionsCount}/{DAILY_ACTIONS_CHECKLIST.length} việc
+            </span>
+            <div className="w-6 h-6 rounded-md bg-white border border-slate-200 flex items-center justify-center text-slate-500">
+              {showChecklist ? <ChevronUp className="w-4 h-4" /> : <ChevronDown className="w-4 h-4" />}
+            </div>
+          </div>
+        </button>
+
+        {/* Expandable Checklist Grid */}
+        {showChecklist && (
+          <div className="p-3 border-t border-emerald-100 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 bg-slate-50/50 animate-in fade-in duration-150">
+            {DAILY_ACTIONS_CHECKLIST.map((action) => {
+              const isChecked = progress.checklistActions?.includes(action.id);
+              return (
+                <div
+                  key={action.id}
+                  onClick={() => onToggleAction(action.id)}
+                  className={`p-2.5 rounded-xl border cursor-pointer transition-all flex items-center justify-between gap-2.5 ${
+                    isChecked
+                      ? 'border-[#22B573] bg-emerald-50 text-emerald-950 font-bold'
+                      : 'border-slate-200 bg-white hover:border-slate-300'
+                  }`}
+                >
+                  <div className="flex items-center gap-2 min-w-0">
+                    <div
+                      className={`w-5 h-5 rounded-md flex items-center justify-center shrink-0 ${
+                        isChecked ? 'bg-[#22B573] text-white' : 'border border-slate-300 bg-white'
+                      }`}
+                    >
+                      {isChecked && <CheckCircle2 className="w-3.5 h-3.5" />}
+                    </div>
+                    <span
+                      className={`text-xs truncate ${
+                        isChecked ? 'line-through opacity-80' : 'text-slate-800'
+                      }`}
+                    >
+                      {action.text}
+                    </span>
                   </div>
-                  <span
-                    className={`text-sm font-semibold ${
-                      isChecked ? 'text-emerald-950 line-through opacity-85' : 'text-slate-800'
-                    }`}
-                  >
-                    {action.text}
+                  <span className="text-[10px] font-black text-amber-700 bg-amber-100/80 px-1.5 py-0.5 rounded shrink-0">
+                    +{action.points}đ
                   </span>
                 </div>
-                <span className="text-xs font-extrabold text-amber-700 bg-amber-100/70 px-2 py-0.5 rounded-md shrink-0">
-                  +{action.points}đ
-                </span>
-              </div>
-            );
-          })}
-        </div>
+              );
+            })}
+          </div>
+        )}
       </section>
     </div>
   );

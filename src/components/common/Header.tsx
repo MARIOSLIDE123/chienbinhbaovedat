@@ -38,7 +38,7 @@ export const Header: React.FC<HeaderProps> = ({
 
   return (
     <header className="sticky top-0 z-40 bg-white/95 backdrop-blur-md border-b border-emerald-100 transition-shadow">
-      <div className="w-full max-w-[1720px] 2xl:max-w-[1850px] mx-auto px-4 sm:px-6 lg:px-8 h-16 sm:h-18 flex items-center justify-between gap-4 md:gap-8">
+      <div className="w-full max-w-6xl mx-auto px-2.5 sm:px-4 md:px-6 h-13 sm:h-14 flex items-center justify-between gap-2.5 md:gap-6">
         {/* Zone 1: Brand Wordmark */}
         <button
           type="button"

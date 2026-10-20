@@ -142,8 +142,8 @@ export function App() {
         onOpenSheetsGuide={() => setShowSheetsGuide(true)}
       />
 
-      {/* Main App Content Viewport - Optimized for 16:9 widescreen */}
-      <main className="flex-1 w-full max-w-[1720px] 2xl:max-w-[1850px] mx-auto px-4 sm:px-6 lg:px-8 pt-6">
+      {/* Main App Content Viewport - Optimized for single-screen view */}
+      <main className="flex-1 w-full max-w-6xl mx-auto px-2.5 sm:px-4 md:px-6 pt-2.5 sm:pt-3.5 pb-2 overflow-x-hidden">
         {currentTab === 'home' && profile && (
           <HomeDashboard
             profile={profile}
@@ -203,25 +203,25 @@ export function App() {
         )}
       </main>
 
-      {/* Footer */}
-      <footer className="bg-white border-t border-emerald-100 py-8 px-4 sm:px-6 mt-auto">
-        <div className="w-full max-w-[1720px] 2xl:max-w-[1850px] mx-auto flex flex-col sm:flex-row items-center justify-between gap-4 text-xs sm:text-sm font-semibold text-slate-500">
-          <div className="flex items-center gap-2">
-            <span className="text-lg">🌍</span>
+      {/* Slim Footer Status Bar */}
+      <footer className="bg-white border-t border-emerald-100/80 py-1.5 sm:py-2 px-3 sm:px-6 shrink-0 mt-auto">
+        <div className="w-full max-w-6xl mx-auto flex items-center justify-between gap-2 text-[11px] font-semibold text-slate-500">
+          <div className="flex items-center gap-1.5 truncate">
+            <span>🌍</span>
             <span className="font-extrabold text-[#20352B]">HÀNH TINH XANH</span>
-            <span>· Chiến Binh Bảo Vệ Đất (Khoa học Lớp 5 - Bài 2)</span>
+            <span className="hidden sm:inline">· Chiến Binh Bảo Vệ Đất (Khoa học 5 - Bài 2)</span>
           </div>
 
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-3 shrink-0">
             <button
               type="button"
               onClick={() => setShowSheetsGuide(true)}
               className="hover:text-emerald-700 transition-colors"
             >
-              Cấu hình Google Sheets
+              Cấu hình Sheets
             </button>
-            <span>·</span>
-            <span>Giáo dục vì một tương lai bền vững</span>
+            <span className="hidden sm:inline">·</span>
+            <span className="hidden sm:inline">Giáo dục vì tương lai xanh</span>
           </div>
         </div>
       </footer>

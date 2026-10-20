@@ -1,14 +1,11 @@
 import React, { useState } from 'react';
 import {
-  Maximize2,
-  Minimize2,
-  ChevronRight,
-  ChevronDown,
   Printer,
-  Sparkles,
-  BookOpen,
-  Info,
   Layers,
+  ChevronRight,
+  Info,
+  CheckCircle,
+  Sparkles,
 } from 'lucide-react';
 
 interface MindNode {
@@ -139,234 +136,228 @@ const MIND_MAP_BRANCHES: MindNode[] = [
 ];
 
 export const InteractiveMindMap: React.FC = () => {
-  const [expandedBranches, setExpandedBranches] = useState<Record<string, boolean>>({
-    'branch-pollution': true,
-    'branch-erosion': true,
-    'branch-protection': true,
-  });
+  const [activeBranchId, setActiveBranchId] = useState<string>('all');
   const [activeModalBranch, setActiveModalBranch] = useState<MindNode | null>(null);
 
-  const toggleBranch = (id: string) => {
-    setExpandedBranches((prev) => ({
-      ...prev,
-      [id]: !prev[id],
-    }));
-  };
-
-  const expandAll = () => {
-    setExpandedBranches({
-      'branch-pollution': true,
-      'branch-erosion': true,
-      'branch-protection': true,
-    });
-  };
-
-  const collapseAll = () => {
-    setExpandedBranches({
-      'branch-pollution': false,
-      'branch-erosion': false,
-      'branch-protection': false,
-    });
-  };
+  const activeBranch = MIND_MAP_BRANCHES.find((b) => b.id === activeBranchId);
 
   const handlePrint = () => {
     window.print();
   };
 
   return (
-    <div className="space-y-6 pb-12">
-      {/* Control bar */}
-      <div className="bg-white border border-emerald-100 rounded-3xl p-4 sm:p-6 shadow-xs flex flex-wrap items-center justify-between gap-4">
-        <div>
-          <div className="inline-flex items-center gap-2 text-xs font-bold px-2.5 py-1 bg-emerald-50 text-emerald-800 rounded-lg mb-1">
-            <Layers className="w-3.5 h-3.5" />
-            <span>Sơ đồ tư duy tương tác</span>
+    <div className="w-full max-w-5xl mx-auto space-y-3 pb-6">
+      {/* 1. Control Header Bar (Compact single row) */}
+      <div className="bg-white border border-emerald-100 rounded-2xl p-2.5 sm:p-3.5 shadow-2xs flex flex-wrap items-center justify-between gap-2.5">
+        <div className="flex items-center gap-2">
+          <div className="w-8 h-8 rounded-xl bg-emerald-500/15 text-[#22B573] flex items-center justify-center font-bold">
+            <Layers className="w-4 h-4" />
           </div>
-          <h2 className="text-xl sm:text-2xl font-black text-[#20352B]">
-            Cây Tri Thức Bảo Vệ Đất Mẹ
-          </h2>
-          <p className="text-xs sm:text-sm text-slate-500 font-medium">
-            Bấm vào các nhánh để mở rộng hoặc thu gọn kiến thức bài học
-          </p>
+          <div>
+            <h2 className="text-xs sm:text-sm font-black text-[#20352B] leading-none">
+              Sơ Đồ Tư Duy Cây Tri Thức
+            </h2>
+            <p className="text-[11px] text-slate-500 font-medium mt-0.5">
+              Khoa học Lớp 5 · Bài 2
+            </p>
+          </div>
         </div>
 
-        <div className="flex flex-wrap items-center gap-2">
+        {/* Branch Filters and Print */}
+        <div className="flex items-center gap-1.5 flex-wrap">
           <button
             type="button"
-            onClick={expandAll}
-            className="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold rounded-xl flex items-center gap-1.5 transition-colors"
+            onClick={() => setActiveBranchId('all')}
+            className={`px-2.5 py-1 text-xs font-bold rounded-lg transition-all ${
+              activeBranchId === 'all'
+                ? 'bg-[#22B573] text-white shadow-2xs'
+                : 'bg-slate-100 hover:bg-slate-200 text-slate-700'
+            }`}
           >
-            <Maximize2 className="w-3.5 h-3.5" />
-            <span>Mở rộng tất cả</span>
+            Toàn bộ 3 nhánh
           </button>
-          <button
-            type="button"
-            onClick={collapseAll}
-            className="px-3 py-1.5 bg-slate-100 hover:bg-slate-200 text-slate-700 text-xs font-bold rounded-xl flex items-center gap-1.5 transition-colors"
-          >
-            <Minimize2 className="w-3.5 h-3.5" />
-            <span>Thu gọn</span>
-          </button>
+          {MIND_MAP_BRANCHES.map((b) => (
+            <button
+              key={b.id}
+              type="button"
+              onClick={() => setActiveBranchId(b.id)}
+              className={`px-2.5 py-1 text-xs font-bold rounded-lg transition-all flex items-center gap-1 ${
+                activeBranchId === b.id
+                  ? 'bg-slate-900 text-white shadow-2xs'
+                  : 'bg-slate-100 hover:bg-slate-200 text-slate-700'
+              }`}
+            >
+              <span>{b.icon}</span>
+              <span className="hidden sm:inline">{b.label.split(': ')[1]}</span>
+            </button>
+          ))}
           <button
             type="button"
             onClick={handlePrint}
-            className="px-3.5 py-1.5 bg-[#22B573] hover:bg-[#1caa68] text-white text-xs font-bold rounded-xl flex items-center gap-1.5 transition-colors shadow-xs"
+            title="In hoặc lưu file PDF sơ đồ"
+            className="p-1 sm:px-2.5 sm:py-1 bg-white hover:bg-slate-100 text-slate-700 border border-slate-200 text-xs font-bold rounded-lg flex items-center gap-1 transition-colors"
           >
             <Printer className="w-3.5 h-3.5" />
-            <span>In / Lưu sơ đồ</span>
+            <span className="hidden sm:inline">In sơ đồ</span>
           </button>
         </div>
       </div>
 
-      {/* Center Root Hub */}
+      {/* 2. Central Root Node Header (Compact pill) */}
       <div className="text-center">
-        <div className="inline-block p-5 sm:p-6 bg-gradient-to-r from-emerald-600 via-teal-600 to-cyan-600 text-white rounded-3xl shadow-lg border-4 border-white max-w-xl">
-          <div className="text-3xl mb-1">🌍</div>
-          <span className="text-[11px] font-extrabold uppercase tracking-widest text-emerald-200 block mb-1">
-            Chủ đề trung tâm · Bài 2 SGK
-          </span>
-          <h1 className="text-lg sm:text-2xl font-black tracking-tight leading-snug">
+        <div className="inline-flex items-center gap-2 px-4 py-2 bg-gradient-to-r from-emerald-600 via-teal-600 to-cyan-600 text-white rounded-2xl shadow-sm border-2 border-white max-w-full">
+          <span className="text-lg">🌍</span>
+          <span className="text-xs sm:text-sm font-black tracking-tight">
             Ô NHIỄM, XÓI MÒN ĐẤT VÀ BẢO VỆ MÔI TRƯỜNG ĐẤT
-          </h1>
+          </span>
         </div>
       </div>
 
-      {/* 3 Main Branches Grid */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-        {MIND_MAP_BRANCHES.map((branch) => {
-          const isExpanded = expandedBranches[branch.id];
-
-          return (
+      {/* 3. Branch Content Area (Single screen fitting) */}
+      {activeBranchId === 'all' ? (
+        /* View All 3 Branches as Compact Summary Cards */
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+          {MIND_MAP_BRANCHES.map((branch) => (
             <div
               key={branch.id}
-              className="bg-white border-2 rounded-3xl p-5 shadow-xs transition-all duration-200 flex flex-col justify-between"
-              style={{ borderColor: `${branch.color}40` }}
+              className="bg-white border-2 rounded-2xl p-3.5 shadow-2xs flex flex-col justify-between space-y-2.5 hover:shadow-md transition-shadow"
+              style={{ borderColor: `${branch.color}50` }}
             >
               <div>
-                {/* Branch Header */}
                 <div
-                  onClick={() => toggleBranch(branch.id)}
-                  className="flex items-center justify-between p-3 rounded-2xl cursor-pointer hover:bg-slate-50 transition-colors"
+                  className="p-2 rounded-xl flex items-center justify-between mb-2"
                   style={{ backgroundColor: `${branch.color}15` }}
                 >
-                  <div className="flex items-center gap-2.5">
-                    <span className="text-2xl">{branch.icon}</span>
-                    <h3 className="font-black text-base sm:text-lg text-[#20352B]">
+                  <div className="flex items-center gap-2">
+                    <span className="text-xl">{branch.icon}</span>
+                    <h3 className="font-black text-xs sm:text-sm text-[#20352B]">
                       {branch.label}
                     </h3>
                   </div>
-                  <div className="p-1 rounded-lg text-slate-600">
-                    {isExpanded ? <ChevronDown className="w-5 h-5" /> : <ChevronRight className="w-5 h-5" />}
-                  </div>
                 </div>
 
-                {/* Short Summary */}
-                <p className="text-xs text-slate-600 font-medium px-2 py-3 leading-relaxed border-b border-slate-100">
+                <p className="text-xs text-slate-600 font-medium leading-relaxed">
                   {branch.summary}
                 </p>
 
-                {/* Sub-branches (Accordion) */}
-                {isExpanded && (
-                  <div className="space-y-4 pt-3">
-                    {branch.subBranches?.map((sub, sIdx) => (
-                      <div key={sIdx} className="pl-3 border-l-2" style={{ borderColor: branch.color }}>
-                        <h4 className="text-xs font-black uppercase tracking-wider text-slate-800 mb-1.5 flex items-center gap-1.5">
-                          <span
-                            className="w-2 h-2 rounded-full"
-                            style={{ backgroundColor: branch.color }}
-                          />
-                          <span>{sub.title}</span>
-                        </h4>
-                        <ul className="space-y-1.5">
-                          {sub.items.map((it, iIdx) => (
-                            <li
-                              key={iIdx}
-                              className="text-xs text-slate-600 font-medium leading-relaxed pl-2 relative before:content-['•'] before:absolute before:left-0 before:text-slate-400"
-                            >
-                              {it}
-                            </li>
-                          ))}
-                        </ul>
-                      </div>
-                    ))}
-                  </div>
-                )}
+                {/* Sub-branch pill list */}
+                <div className="mt-2.5 pt-2 border-t border-slate-100 space-y-1">
+                  {branch.subBranches?.map((sub, sIdx) => (
+                    <div
+                      key={sIdx}
+                      className="text-[11px] font-bold text-slate-700 flex items-center gap-1.5"
+                    >
+                      <span
+                        className="w-1.5 h-1.5 rounded-full shrink-0"
+                        style={{ backgroundColor: branch.color }}
+                      />
+                      <span className="truncate">{sub.title}</span>
+                    </div>
+                  ))}
+                </div>
               </div>
 
-              {/* Zoom In Modal Trigger */}
-              <div className="pt-4 mt-4 border-t border-slate-100">
-                <button
-                  type="button"
-                  onClick={() => setActiveModalBranch(branch)}
-                  className="w-full py-2.5 px-3 bg-slate-50 hover:bg-slate-100 text-slate-700 text-xs font-bold rounded-xl flex items-center justify-center gap-1.5 transition-colors border border-slate-200"
-                >
-                  <Info className="w-3.5 h-3.5 text-emerald-600" />
-                  <span>Xem chi tiết nhánh này</span>
-                </button>
-              </div>
+              <button
+                type="button"
+                onClick={() => setActiveBranchId(branch.id)}
+                className="w-full py-1.5 px-3 bg-slate-50 hover:bg-slate-100 text-slate-800 text-xs font-bold rounded-xl flex items-center justify-center gap-1 transition-colors border border-slate-200"
+              >
+                <span>Xem chi tiết nhánh này</span>
+                <ChevronRight className="w-3.5 h-3.5" />
+              </button>
             </div>
-          );
-        })}
-      </div>
-
-      {/* Detail Modal when clicked "Xem chi tiết nhánh này" */}
-      {activeModalBranch && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-xs p-4">
-          <div className="bg-white border-2 border-emerald-300 rounded-3xl max-w-2xl w-full p-6 sm:p-8 shadow-2xl max-h-[90vh] overflow-y-auto">
-            <div className="flex items-center justify-between pb-4 border-b border-slate-100 mb-4">
-              <div className="flex items-center gap-3">
-                <span className="text-3xl">{activeModalBranch.icon}</span>
+          ))}
+        </div>
+      ) : (
+        /* Detailed View of Single Selected Branch */
+        activeBranch && (
+          <div
+            className="bg-white border-2 rounded-2xl p-4 shadow-2xs space-y-3 animate-in fade-in duration-150"
+            style={{ borderColor: `${activeBranch.color}60` }}
+          >
+            {/* Branch Header */}
+            <div className="flex items-center justify-between pb-2 border-b border-slate-100">
+              <div className="flex items-center gap-2">
+                <span className="text-2xl">{activeBranch.icon}</span>
                 <div>
-                  <h3 className="text-xl sm:text-2xl font-black text-[#20352B]">
-                    {activeModalBranch.label}
+                  <h3 className="text-sm sm:text-base font-black text-[#20352B]">
+                    {activeBranch.label}
                   </h3>
-                  <span className="text-xs font-semibold text-slate-500">
-                    Sơ đồ tư duy mở rộng
-                  </span>
+                  <p className="text-xs text-slate-500 font-medium">{activeBranch.summary}</p>
                 </div>
               </div>
               <button
                 type="button"
-                onClick={() => setActiveModalBranch(null)}
-                className="w-8 h-8 rounded-full bg-slate-100 hover:bg-slate-200 text-slate-600 flex items-center justify-center font-bold text-sm"
+                onClick={() => setActiveBranchId('all')}
+                className="px-2.5 py-1 text-xs font-bold text-slate-600 bg-slate-100 hover:bg-slate-200 rounded-lg shrink-0 transition-colors"
               >
-                ✕
+                ← Trở lại xem cả 3 nhánh
               </button>
             </div>
 
-            <p className="text-sm text-slate-700 font-semibold mb-6 p-3.5 bg-slate-50 rounded-2xl border border-slate-200">
-              {activeModalBranch.summary}
-            </p>
-
-            <div className="space-y-5">
-              {activeModalBranch.subBranches?.map((sub, idx) => (
-                <div key={idx} className="p-4 rounded-2xl bg-[#FFFDF7] border border-amber-200">
-                  <h4 className="text-sm font-extrabold text-[#20352B] mb-2 flex items-center gap-2">
+            {/* Sub-branch Cards (Compact grid) */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2.5">
+              {activeBranch.subBranches?.map((sub, idx) => (
+                <div
+                  key={idx}
+                  className="p-3 rounded-xl bg-slate-50 border border-slate-200 space-y-1.5"
+                >
+                  <h4 className="text-xs font-black text-[#20352B] flex items-center gap-1.5">
                     <span
-                      className="w-2.5 h-2.5 rounded-full"
-                      style={{ backgroundColor: activeModalBranch.color }}
+                      className="w-2 h-2 rounded-full shrink-0"
+                      style={{ backgroundColor: activeBranch.color }}
                     />
                     <span>{sub.title}</span>
                   </h4>
-                  <ul className="space-y-2">
+                  <ul className="space-y-1">
                     {sub.items.map((it, iIdx) => (
-                      <li key={iIdx} className="text-xs sm:text-sm text-slate-700 font-medium leading-relaxed pl-3 relative before:content-['✓'] before:absolute before:left-0 before:text-emerald-600 before:font-bold">
-                        {it}
+                      <li
+                        key={iIdx}
+                        className="text-[11px] sm:text-xs text-slate-700 font-medium leading-relaxed flex items-start gap-1.5"
+                      >
+                        <span className="text-emerald-600 font-bold shrink-0">•</span>
+                        <span>{it}</span>
                       </li>
                     ))}
                   </ul>
                 </div>
               ))}
             </div>
+          </div>
+        )
+      )}
 
-            <div className="mt-6 pt-4 border-t border-slate-100 flex justify-end">
+      {/* Modal Zoom Details (if opened) */}
+      {activeModalBranch && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-xs p-4">
+          <div className="bg-white border-2 border-emerald-300 rounded-3xl max-w-xl w-full p-4 sm:p-6 shadow-2xl max-h-[85vh] overflow-y-auto space-y-3">
+            <div className="flex items-center justify-between pb-2 border-b border-slate-100">
+              <div className="flex items-center gap-2">
+                <span className="text-2xl">{activeModalBranch.icon}</span>
+                <h3 className="text-base font-black text-[#20352B]">{activeModalBranch.label}</h3>
+              </div>
               <button
                 type="button"
                 onClick={() => setActiveModalBranch(null)}
-                className="px-5 py-2.5 bg-[#22B573] hover:bg-[#1caa68] text-white font-extrabold text-xs rounded-xl shadow-xs"
+                className="w-7 h-7 rounded-full bg-slate-100 hover:bg-slate-200 flex items-center justify-center text-xs font-bold"
               >
-                Đã hiểu rõ
+                ✕
               </button>
+            </div>
+            <p className="text-xs text-slate-600 font-medium p-2.5 bg-slate-50 rounded-xl border border-slate-200">
+              {activeModalBranch.summary}
+            </p>
+            <div className="space-y-2">
+              {activeModalBranch.subBranches?.map((sub, idx) => (
+                <div key={idx} className="p-2.5 rounded-xl bg-white border border-slate-200 space-y-1">
+                  <h4 className="text-xs font-bold text-slate-900">{sub.title}</h4>
+                  <ul className="space-y-0.5 text-xs text-slate-600">
+                    {sub.items.map((it, iIdx) => (
+                      <li key={iIdx} className="leading-snug">• {it}</li>
+                    ))}
+                  </ul>
+                </div>
+              ))}
             </div>
           </div>
         </div>

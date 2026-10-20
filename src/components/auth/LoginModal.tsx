@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { StudentProfile } from '../../types';
 import { CaptainEarth } from '../mascot/CaptainEarth';
-import { User, School, BookOpen, MapPin, Shield, Sparkles, CheckCircle2 } from 'lucide-react';
+import { User, School, BookOpen, MapPin, Sparkles, AlertCircle } from 'lucide-react';
 
 interface LoginModalProps {
   onLogin: (profile: StudentProfile) => void;
@@ -9,11 +9,11 @@ interface LoginModalProps {
 }
 
 const AVATAR_OPTIONS = [
-  { id: 'earth', name: 'Đội trưởng Đất', emoji: '🌍' },
-  { id: 'sprout', name: 'Mầm Non Vui Vẻ', emoji: '🌱' },
-  { id: 'water', name: 'Giọt Nước Nhỏ', emoji: '💧' },
-  { id: 'worm', name: 'Giun Đất Chăm Chỉ', emoji: '🪱' },
-  { id: 'leaf', name: 'Chiếc Lá Xanh', emoji: '🍃' },
+  { id: 'earth', name: 'Đất Xanh', emoji: '🌍' },
+  { id: 'sprout', name: 'Mầm Non', emoji: '🌱' },
+  { id: 'water', name: 'Nước Nhỏ', emoji: '💧' },
+  { id: 'worm', name: 'Giun Đất', emoji: '🪱' },
+  { id: 'leaf', name: 'Lá Xanh', emoji: '🍃' },
 ];
 
 export const LoginModal: React.FC<LoginModalProps> = ({ onLogin, initialProfile }) => {
@@ -37,7 +37,7 @@ export const LoginModal: React.FC<LoginModalProps> = ({ onLogin, initialProfile 
     const cleanProvince = normalizeSpaces(province);
 
     if (!cleanName) {
-      setErrorMsg('Vui lòng nhập Họ và tên của em để nhận chứng nhận chiến binh!');
+      setErrorMsg('Vui lòng nhập Họ và tên để nhận chứng nhận chiến binh!');
       return;
     }
     if (cleanName.length < 2) {
@@ -64,166 +64,197 @@ export const LoginModal: React.FC<LoginModalProps> = ({ onLogin, initialProfile 
       avatarId,
     };
 
-    // Save to local storage
     localStorage.setItem('green_planet_student', JSON.stringify(profile));
     onLogin(profile);
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/60 backdrop-blur-sm p-4 overflow-y-auto">
-      <div className="bg-[#FFFDF7] border-2 border-[#22B573]/40 rounded-3xl max-w-xl w-full p-6 sm:p-8 shadow-2xl relative my-8">
-        {/* Header Mascot greeting */}
-        <div className="text-center mb-6">
-          <div className="inline-flex items-center justify-center mb-2">
-            <CaptainEarth
-              mood="greeting"
-              size="md"
-              showSpeechBubble={false}
-              className="justify-center"
-            />
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-slate-950/70 backdrop-blur-sm p-2 sm:p-4 h-[100dvh] max-h-[100dvh] overflow-hidden pt-[max(0.5rem,env(safe-area-inset-top))] pb-[max(0.5rem,env(safe-area-inset-bottom))]">
+      <div className="bg-[#FFFDF7] border-2 border-emerald-400/40 rounded-2xl sm:rounded-3xl shadow-2xl w-full max-w-3xl max-h-[96dvh] flex flex-col md:flex-row overflow-hidden animate-in fade-in zoom-in-95 duration-200">
+        {/* Left Side (Desktop): Brand & Mascot / Top Bar (Mobile) */}
+        <div className="md:w-5/12 bg-gradient-to-br from-emerald-500/15 via-[#FFF9EA] to-emerald-100/60 p-3.5 sm:p-5 flex flex-col justify-between border-b md:border-b-0 md:border-r border-emerald-100 shrink-0">
+          {/* Header text & logo */}
+          <div>
+            <div className="flex items-center gap-2 mb-1.5">
+              <span className="text-xl sm:text-2xl">🌍</span>
+              <div>
+                <h1 className="text-base sm:text-lg font-black tracking-tight text-[#20352B] leading-none">
+                  HÀNH TINH XANH
+                </h1>
+                <span className="text-[10px] sm:text-xs font-black text-[#22B573] tracking-wider uppercase block">
+                  Chiến Binh Bảo Vệ Đất · Lớp 5
+                </span>
+              </div>
+            </div>
+
+            {/* Mascot on desktop */}
+            <div className="hidden md:flex flex-col items-center text-center my-4">
+              <CaptainEarth
+                mood="greeting"
+                size="md"
+                showSpeechBubble={false}
+                className="justify-center drop-shadow-md scale-95"
+              />
+              <div className="mt-2 p-2.5 bg-white/90 border border-emerald-200/80 rounded-xl text-xs font-semibold text-slate-700 leading-snug shadow-2xs">
+                Chào bạn nhỏ! Nhập tên để cùng giải cứu Đất Mẹ và ghi danh Bảng Vàng nhé! 🌱
+              </div>
+            </div>
           </div>
-          <h2 className="text-2xl sm:text-3xl font-extrabold text-[#20352B] tracking-tight">
-            HÀNH TINH XANH
-          </h2>
-          <p className="text-sm font-semibold text-[#22B573] uppercase tracking-wider mt-0.5">
-            CHIẾN BINH BẢO VỆ ĐẤT
-          </p>
-          <p className="text-slate-600 text-sm mt-2 max-w-md mx-auto">
-            Xin chào chiến binh nhí! Hãy nhập thông tin để bắt đầu hành trình giải cứu Trái Đất nhé!
-          </p>
+
+          {/* Quick contest highlights (desktop only) */}
+          <div className="hidden md:flex flex-col gap-1.5 text-[11px] font-bold text-emerald-900/90 pt-2 border-t border-emerald-200/60">
+            <span className="flex items-center gap-1.5">
+              <span>⭐</span> 20 câu hỏi Đấu trường tính giờ
+            </span>
+            <span className="flex items-center gap-1.5">
+              <span>🔬</span> 3 phòng thí nghiệm khoa học vui
+            </span>
+            <span className="flex items-center gap-1.5">
+              <span>🏆</span> Bảng xếp hạng trực tuyến toàn quốc
+            </span>
+          </div>
         </div>
 
-        {errorMsg && (
-          <div className="mb-4 p-3 bg-rose-50 border border-rose-200 text-rose-700 text-sm rounded-xl font-medium flex items-center gap-2">
-            <span className="shrink-0 text-base">⚠️</span>
-            <span>{errorMsg}</span>
+        {/* Right Side: Compact Form (Single-screen fitting) */}
+        <form
+          onSubmit={handleSubmit}
+          className="flex-1 p-3.5 sm:p-5 md:p-6 flex flex-col justify-between overflow-y-auto overscroll-contain space-y-2.5 sm:space-y-3"
+        >
+          {/* Title on mobile only */}
+          <div className="md:hidden flex items-center justify-between pb-1 border-b border-slate-100">
+            <span className="text-xs font-extrabold text-slate-800">
+              Nhập thông tin chiến binh nhí:
+            </span>
+            <span className="text-[10px] font-bold text-emerald-700 bg-emerald-50 px-2 py-0.5 rounded-md">
+              Khoa học 5 · Bài 2
+            </span>
           </div>
-        )}
 
-        <form onSubmit={handleSubmit} className="space-y-4">
-          {/* Avatar choice */}
+          {/* Avatar selector (Compact row) */}
           <div>
-            <label className="block text-xs font-bold text-slate-700 uppercase tracking-wider mb-2">
-              Chọn nhân vật đại diện của em:
-            </label>
-            <div className="grid grid-cols-5 gap-2">
+            <span className="block text-[11px] font-extrabold text-slate-600 uppercase tracking-wider mb-1">
+              Chọn nhân vật đại diện:
+            </span>
+            <div className="grid grid-cols-5 gap-1.5">
               {AVATAR_OPTIONS.map((av) => (
                 <button
                   key={av.id}
                   type="button"
                   onClick={() => setAvatarId(av.id)}
-                  className={`flex flex-col items-center justify-center p-2 rounded-2xl border-2 transition-all ${
+                  className={`flex flex-col items-center justify-center p-1 sm:p-1.5 rounded-xl border transition-all ${
                     avatarId === av.id
-                      ? 'border-[#22B573] bg-emerald-50 scale-105 shadow-sm'
+                      ? 'border-[#22B573] bg-emerald-50 ring-2 ring-emerald-200 shadow-2xs scale-102'
                       : 'border-slate-200 bg-white hover:border-slate-300'
                   }`}
                 >
-                  <span className="text-2xl select-none">{av.emoji}</span>
-                  <span className="text-[11px] font-bold text-slate-700 mt-1 truncate max-w-full">
-                    {av.name.split(' ')[0]}
+                  <span className="text-lg sm:text-xl select-none leading-none">{av.emoji}</span>
+                  <span className="text-[10px] font-bold text-slate-700 mt-0.5 truncate max-w-full">
+                    {av.name}
                   </span>
                 </button>
               ))}
             </div>
           </div>
 
-          {/* Full Name */}
+          {/* Error Message */}
+          {errorMsg && (
+            <div className="p-2 bg-rose-50 border border-rose-200 text-rose-700 text-xs rounded-xl font-medium flex items-center gap-1.5 animate-shake">
+              <AlertCircle className="w-4 h-4 shrink-0 text-rose-600" />
+              <span>{errorMsg}</span>
+            </div>
+          )}
+
+          {/* Input: Full Name */}
           <div>
-            <label className="block text-sm font-bold text-slate-800 mb-1">
+            <label className="block text-xs font-bold text-slate-800 mb-0.5">
               Họ và tên của em <span className="text-rose-500">*</span>
             </label>
             <div className="relative">
-              <User className="absolute left-3.5 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
+              <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
               <input
                 type="text"
                 value={fullName}
                 onChange={(e) => setFullName(e.target.value)}
                 placeholder="Ví dụ: Nguyễn Minh Anh"
-                className="w-full pl-11 pr-4 py-3 bg-white border border-slate-300 rounded-xl text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#22B573] focus:border-transparent text-base font-medium"
+                className="w-full pl-9 pr-3 py-2 bg-white border border-slate-300 rounded-xl text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#22B573] text-sm font-semibold transition-all"
               />
             </div>
           </div>
 
-          {/* Class & School row */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+          {/* Inputs Row: Class & School */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
             <div>
-              <label className="block text-sm font-bold text-slate-800 mb-1">
-                Lớp <span className="text-rose-500">*</span>
+              <label className="block text-xs font-bold text-slate-800 mb-0.5">
+                Lớp học <span className="text-rose-500">*</span>
               </label>
               <div className="relative">
-                <BookOpen className="absolute left-3.5 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
+                <BookOpen className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
                 <input
                   type="text"
                   value={className}
                   onChange={(e) => setClassName(e.target.value)}
-                  placeholder="Ví dụ: 5A1"
-                  className="w-full pl-11 pr-4 py-3 bg-white border border-slate-300 rounded-xl text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#22B573] focus:border-transparent text-base font-medium"
+                  placeholder="Ví dụ: 5A1, 5B..."
+                  className="w-full pl-9 pr-3 py-2 bg-white border border-slate-300 rounded-xl text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#22B573] text-sm font-semibold transition-all"
                 />
               </div>
             </div>
 
             <div>
-              <label className="block text-sm font-bold text-slate-800 mb-1">
-                Trường học <span className="text-rose-500">*</span>
+              <label className="block text-xs font-bold text-slate-800 mb-0.5">
+                Trường tiểu học <span className="text-rose-500">*</span>
               </label>
               <div className="relative">
-                <School className="absolute left-3.5 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
+                <School className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
                 <input
                   type="text"
                   value={schoolName}
                   onChange={(e) => setSchoolName(e.target.value)}
-                  placeholder="Ví dụ: Tiểu học Kim Đồng"
-                  className="w-full pl-11 pr-4 py-3 bg-white border border-slate-300 rounded-xl text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#22B573] focus:border-transparent text-base font-medium"
+                  placeholder="Ví dụ: TH Kim Đồng"
+                  className="w-full pl-9 pr-3 py-2 bg-white border border-slate-300 rounded-xl text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#22B573] text-sm font-semibold transition-all"
                 />
               </div>
             </div>
           </div>
 
-          {/* Optional Province */}
+          {/* Input: Province (Optional, compact) */}
           <div>
-            <label className="block text-sm font-bold text-slate-800 mb-1">
-              Tỉnh / Thành phố <span className="text-xs text-slate-400 font-normal">(Tùy chọn)</span>
+            <label className="block text-xs font-bold text-slate-800 mb-0.5">
+              Tỉnh / Thành phố <span className="text-[10px] text-slate-400 font-normal">(Tùy chọn)</span>
             </label>
             <div className="relative">
-              <MapPin className="absolute left-3.5 top-1/2 -translate-y-1/2 w-5 h-5 text-slate-400" />
+              <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
               <input
                 type="text"
                 value={province}
                 onChange={(e) => setProvince(e.target.value)}
-                placeholder="Ví dụ: Hà Nội, TP. Hồ Chí Minh, Đà Nẵng..."
-                className="w-full pl-11 pr-4 py-3 bg-white border border-slate-300 rounded-xl text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#22B573] focus:border-transparent text-base font-medium"
+                placeholder="Ví dụ: Hà Nội, TP.HCM, Đà Nẵng..."
+                className="w-full pl-9 pr-3 py-2 bg-white border border-slate-300 rounded-xl text-slate-900 placeholder-slate-400 focus:outline-none focus:ring-2 focus:ring-[#22B573] text-sm font-semibold transition-all"
               />
             </div>
           </div>
 
-          {/* Privacy Toggle: Mask name on public leaderboard */}
-          <div className="p-3.5 bg-emerald-50/70 border border-emerald-200/80 rounded-2xl flex items-start gap-3">
+          {/* Privacy Toggle: Mask name on leaderboard */}
+          <div className="p-2 sm:p-2.5 bg-emerald-50/70 border border-emerald-200/70 rounded-xl flex items-center gap-2.5">
             <input
               type="checkbox"
               id="abbrev-checkbox"
               checked={useAbbreviatedName}
               onChange={(e) => setUseAbbreviatedName(e.target.checked)}
-              className="mt-1 w-4 h-4 text-[#22B573] rounded border-slate-300 focus:ring-[#22B573]"
+              className="w-4 h-4 text-[#22B573] rounded border-slate-300 focus:ring-[#22B573] shrink-0"
             />
-            <label htmlFor="abbrev-checkbox" className="text-xs text-slate-700 leading-relaxed cursor-pointer">
-              <strong className="text-[#20352B] block mb-0.5">Bảo vệ thông tin cá nhân:</strong>
-              Hiển thị tên viết tắt trên Bảng xếp hạng toàn quốc (Ví dụ: <em>Nguyễn Minh Anh</em> sẽ hiển thị thành <em>N. M. Anh</em>).
+            <label htmlFor="abbrev-checkbox" className="text-[11px] text-slate-700 leading-tight cursor-pointer select-none">
+              <strong className="text-emerald-900 mr-1">Bảo vệ quyền riêng tư:</strong>
+              Hiển thị tên viết tắt trên Bảng xếp hạng (Ví dụ: <em>N. M. Anh</em>).
             </label>
           </div>
 
-          {/* Notice about score recording */}
-          <div className="flex items-center gap-2 text-xs text-slate-500 px-1">
-            <Shield className="w-4 h-4 text-emerald-600 shrink-0" />
-            <span>Thông tin được dùng để ghi nhận thành tích và cấp huy hiệu học tập.</span>
-          </div>
-
-          {/* Action button */}
+          {/* Submit Button */}
           <button
             type="submit"
-            className="w-full py-3.5 px-6 bg-[#22B573] hover:bg-[#1caa68] text-white font-extrabold text-lg rounded-2xl shadow-lg shadow-emerald-600/20 active:scale-[0.99] transition-all flex items-center justify-center gap-2"
+            className="w-full py-2.5 sm:py-3 px-4 bg-gradient-to-r from-[#22B573] via-[#1caa68] to-[#179659] hover:brightness-105 active:scale-[0.99] text-white font-black text-sm sm:text-base rounded-xl sm:rounded-2xl shadow-md shadow-emerald-600/20 transition-all flex items-center justify-center gap-2 mt-1 shrink-0"
           >
             <span>BẮT ĐẦU HÀNH TRÌNH</span>
-            <Sparkles className="w-5 h-5" />
+            <Sparkles className="w-4 h-4" />
           </button>
         </form>
       </div>
